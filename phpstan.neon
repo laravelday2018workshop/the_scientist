@@ -1,0 +1,4 @@
+includes:
+  - vendor/phpstan/phpstan/conf/config.levelmax.neon
+  - vendor/jangregor/phpstan-prophecy/src/extension.neon
+  - vendor/nunomaduro/larastan/extension.neon

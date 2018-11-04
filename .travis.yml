@@ -1,0 +1,18 @@
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t acme/science .
+  - docker run --name science -itd -e "TRAVIS=$TRAVIS" -e "TRAVIS_JOB_ID=$TRAVIS_JOB_ID" acme/science bash
+
+
+script:
+  - docker exec science /bin/sh -c "php vendor/bin/php-cs-fixer fix --dry-run --diff  --config=.php_cs.dist"
+  - docker exec science /bin/sh -c "php vendor/bin/phpunit --coverage-clover clover.xml"
+
+after_success:
+  - docker exec science /bin/sh -c "php vendor/bin/php-coveralls -x clover.xml -o coveralls-upload.json"
