@@ -1,6 +1,13 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()->in(__DIR__);
+$finder = PhpCsFixer\Finder::create()->exclude([
+    'bootstrap',
+    'config',
+    'database',
+    'resources',
+    'storage',
+    'vendor',
+])->in(__DIR__);
 
 return PhpCsFixer\Config::create()
     ->setFinder($finder)
