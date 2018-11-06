@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Acme\Article;
 
-use Acme\Academic\Academic;
+use Acme\Academic\ValueObject\AcademicID;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
-use Acme\Reviewer\Reviewer;
+use Acme\Reviewer\ValueObject\ReviewerID;
 use DateTimeImmutable;
 
 final class Article
@@ -29,14 +29,14 @@ final class Article
     private $body;
 
     /**
-     * @var Academic
+     * @var AcademicID
      */
-    private $academic;
+    private $academicID;
 
     /**
-     * @var Reviewer
+     * @var ReviewerID
      */
-    private $reviewer;
+    private $reviewerID;
 
     /**
      * @var DateTimeImmutable|null
@@ -57,8 +57,8 @@ final class Article
         ArticleID $articleID,
         Title $title,
         Body $body,
-        Academic $academic,
-        Reviewer $reviewer,
+        AcademicID $academicID,
+        ReviewerID $reviewerID,
         ?DateTimeImmutable $publishDate,
         DateTimeImmutable $creationDate,
         ?DateTimeImmutable $lastUpdateDate
@@ -66,8 +66,8 @@ final class Article
         $this->articleID = $articleID;
         $this->title = $title;
         $this->body = $body;
-        $this->academic = $academic;
-        $this->reviewer = $reviewer;
+        $this->academicID = $academicID;
+        $this->reviewerID = $reviewerID;
         $this->publishDate = $publishDate;
         $this->creationDate = $creationDate;
         $this->lastUpdateDate = $lastUpdateDate;
@@ -88,14 +88,14 @@ final class Article
         return $this->body;
     }
 
-    public function academic(): Academic
+    public function academicID(): AcademicID
     {
-        return $this->academic;
+        return $this->academicID;
     }
 
-    public function reviewer(): Reviewer
+    public function reviewerID(): ReviewerID
     {
-        return $this->reviewer;
+        return $this->reviewerID;
     }
 
     public function publishDate(): ?DateTimeImmutable

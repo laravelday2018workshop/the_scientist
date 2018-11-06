@@ -6,11 +6,13 @@ namespace Tests;
 
 use Acme\Academic\Academic;
 use Acme\Academic\ValueObject\AcademicID;
+use Acme\Article\Article;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
 use Acme\Reviewer\Reviewer;
 use Acme\Reviewer\ValueObject\ReviewerID;
+use DateTimeImmutable;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -40,6 +42,19 @@ abstract class TestCase extends BaseTestCase
             return $faker;
         });
 
+        $factoryMuffin->define(Article::class)->setMaker(function () use ($factoryMuffin): Article {
+            return new Article(
+                $factoryMuffin->instance(ArticleID::class),
+                $factoryMuffin->instance(Title::class),
+                $factoryMuffin->instance(Body::class),
+                $factoryMuffin->instance(AcademicID::class),
+                $factoryMuffin->instance(ReviewerID::class),
+                new DateTimeImmutable(),
+                new DateTimeImmutable(),
+                new DateTimeImmutable()
+            );
+        });
+
         $factoryMuffin->define(ArticleID::class)->setMaker(function () use ($faker): ArticleID {
             return ArticleID::fromUUID($faker->uuid);
         });
@@ -60,7 +75,7 @@ abstract class TestCase extends BaseTestCase
             return AcademicID::fromUUID($faker->uuid);
         });
 
-        $factoryMuffin->define(Reviewer::class)->setMaker(function () use ($factoryMuffin): Reviewer {
+        $factoryMuffin->define(Reviewer::class)->setMaker(function () use ($factoryMuffin): ReviewerID {
             return new Reviewer($factoryMuffin->instance(ReviewerID::class));
         });
 
