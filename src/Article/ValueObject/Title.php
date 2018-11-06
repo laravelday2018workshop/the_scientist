@@ -16,6 +16,9 @@ final class Title
      */
     private $value;
 
+    /**
+     * @throws InvalidTitle
+     */
     public function __construct(string $value)
     {
         $value = \trim($value);
