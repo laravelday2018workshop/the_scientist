@@ -15,6 +15,9 @@ final class Body
      */
     private $value;
 
+    /**
+     * @throws InvalidBody
+     */
     public function __construct(string $value)
     {
         $value = \trim($value);

@@ -12,4 +12,14 @@ final class Academic
      * @var AcademicID
      */
     private $academicID;
+
+    public function __construct(self $academicID)
+    {
+        $this->academicID = $academicID;
+    }
+
+    public function id(): AcademicID
+    {
+        return $this->academicID;
+    }
 }
