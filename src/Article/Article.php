@@ -73,6 +73,16 @@ final class Article
         $this->lastUpdateDate = $lastUpdateDate;
     }
 
+    public static function create(ArticleID $articleID,
+                                  Title $title,
+                                  Body $body,
+                                  AcademicID $academicID,
+                                  ReviewerID $reviewerID,
+                                  DateTimeImmutable $creationDate)
+    {
+        return new self($articleID, $title, $body, $academicID, $reviewerID, null, $creationDate, null);
+    }
+
     public function id(): ArticleID
     {
         return $this->articleID;

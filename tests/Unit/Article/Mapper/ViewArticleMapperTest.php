@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Article\Mapper;
 
 use Acme\Article\Article;
-use Acme\Article\Mapper\ViewArticleMapper;
+use App\Integration\Article\Mapper\ViewArticleMapper;
 use Error;
 use Tests\TestCase;
 use const DATE_ATOM;
