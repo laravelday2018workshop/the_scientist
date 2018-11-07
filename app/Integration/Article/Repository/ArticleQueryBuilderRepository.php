@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Acme\Article\Repository;
+namespace App\Integration\Article\Repository;
 
 use Acme\Article\Article;
 use Acme\Article\ArticleCollection;
-use Acme\Article\Mapper\ArticleMapper;
+use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\ValueObject\ArticleID;
+use App\Integration\Article\Mapper\ArticleMapper;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 final class ArticleQueryBuilderRepository implements ArticleRepository

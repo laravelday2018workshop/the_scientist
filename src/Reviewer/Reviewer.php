@@ -6,7 +6,7 @@ namespace Acme\Reviewer;
 
 use Acme\Reviewer\ValueObject\ReviewerID;
 
-final class ReviewerID
+final class Reviewer
 {
     /**
      * @var ReviewerID
