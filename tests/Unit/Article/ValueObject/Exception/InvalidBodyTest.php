@@ -8,6 +8,9 @@ use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Exception\InvalidBody;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\ValueObject\Exception\InvalidBody
+ */
 final class InvalidBodyTest extends TestCase
 {
     /**

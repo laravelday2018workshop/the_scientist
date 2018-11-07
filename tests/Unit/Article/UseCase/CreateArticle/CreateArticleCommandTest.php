@@ -11,6 +11,9 @@ use Acme\Article\ValueObject\Title;
 use Acme\Reviewer\ValueObject\ReviewerID;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\UseCase\CreateArticle\CreateArticleCommand
+ */
 final class CreateArticleCommandTest extends TestCase
 {
     /**

@@ -8,6 +8,9 @@ use Acme\Article\ValueObject\Exception\InvalidTitle;
 use Acme\Article\ValueObject\Title;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\ValueObject\Exception\InvalidTitle
+ */
 final class InvalidTitleTest extends TestCase
 {
     /**
