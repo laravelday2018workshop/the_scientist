@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Article\Mapper;
 
 use Acme\Article\Article;
-use Acme\Article\Mapper\DatabaseArticleMapper;
+use App\Integration\Article\Mapper\DatabaseArticleMapper;
 use DateTimeImmutable;
 use Error;
 use Faker\Generator as Faker;

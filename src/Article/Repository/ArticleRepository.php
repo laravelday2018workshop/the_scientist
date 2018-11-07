@@ -8,6 +8,7 @@ use Acme\Article\Article;
 use Acme\Article\ArticleCollection;
 use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
+use Acme\Article\Repository\Exception\ImpossibleToSaveArticle;
 use Acme\Article\ValueObject\ArticleID;
 
 interface ArticleRepository
@@ -28,4 +29,11 @@ interface ArticleRepository
      * @throws ImpossibleToRetrieveArticles
      */
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection;
+
+    public function nextID(): ArticleID;
+
+    /**
+     * @throws ImpossibleToSaveArticle
+     */
+    public function add(Article $article): void;
 }

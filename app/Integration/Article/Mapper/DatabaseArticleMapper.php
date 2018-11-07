@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Acme\Article\Mapper;
+namespace App\Integration\Article\Mapper;
 
 use Acme\Academic\ValueObject\AcademicID;
 use Acme\Article\Article;
