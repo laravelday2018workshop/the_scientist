@@ -31,7 +31,8 @@ final class ArticleTest extends TestCase
         ?DateTimeImmutable $publishDate,
         DateTimeImmutable $creationDate,
         ?DateTimeImmutable $lastUpdateDate
-    ): void {
+    ): void
+    {
         $article = new Article(
             $articleID,
             $title,
