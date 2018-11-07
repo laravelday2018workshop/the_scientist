@@ -12,6 +12,9 @@ use Faker\Generator as Faker;
 use Tests\TestCase;
 use const DATE_ATOM;
 
+/**
+ * @covers \App\Integration\Article\Mapper\DatabaseArticleMapper
+ */
 final class DatabaseArticleMapperTest extends TestCase
 {
     /**

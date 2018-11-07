@@ -9,6 +9,9 @@ use Acme\Article\ValueObject\Title;
 use Error;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Acme\Article\ValueObject\Title
+ */
 final class TitleTest extends TestCase
 {
     /**
