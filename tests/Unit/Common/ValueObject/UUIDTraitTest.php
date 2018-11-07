@@ -9,6 +9,12 @@ use Error;
 use Tests\Fixture\UUIDFixture;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\ValueObject\ArticleID
+ * @covers \Acme\Academic\ValueObject\AcademicID
+ * @covers \Acme\Reviewer\ValueObject\ReviewerID
+ * @covers \Acme\Common\ValueObject\UUIDTrait
+ */
 final class UUIDTraitTest extends TestCase
 {
     /**

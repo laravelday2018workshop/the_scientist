@@ -17,6 +17,9 @@ use PHPUnit\Framework\Assert;
 use Prophecy\Argument;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\UseCase\CreateArticle\CreateArticleHandler
+ */
 final class CreateArticleHandlerTest extends TestCase
 {
     /**

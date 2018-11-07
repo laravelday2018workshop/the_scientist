@@ -10,6 +10,9 @@ use Error;
 use Tests\TestCase;
 use const DATE_ATOM;
 
+/**
+ * @covers \App\Integration\Article\Mapper\ViewArticleMapper
+ */
 final class ViewArticleMapperTest extends TestCase
 {
     /**

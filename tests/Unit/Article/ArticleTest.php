@@ -13,6 +13,9 @@ use Acme\Reviewer\ValueObject\ReviewerID;
 use DateTimeImmutable;
 use Tests\TestCase;
 
+/**
+ * @covers \Acme\Article\Article
+ */
 final class ArticleTest extends TestCase
 {
     /**

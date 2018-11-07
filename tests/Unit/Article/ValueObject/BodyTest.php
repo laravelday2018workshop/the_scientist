@@ -9,6 +9,9 @@ use Acme\Article\ValueObject\Exception\InvalidBody;
 use Error;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \Acme\Article\ValueObject\Body
+ */
 final class BodyTest extends TestCase
 {
     /**
