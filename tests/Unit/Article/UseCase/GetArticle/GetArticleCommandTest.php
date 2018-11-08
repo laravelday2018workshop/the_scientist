@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Article\UseCase\GetArticle;
 
 use Acme\Article\UseCase\GetArticle\GetArticleCommand;
@@ -26,8 +28,8 @@ class GetArticleCommandTest extends TestCase
     {
         return [
             [
-                $this->factoryFaker->instance(ArticleID::class)
-            ]
+                $this->factoryFaker->instance(ArticleID::class),
+            ],
         ];
     }
 }
