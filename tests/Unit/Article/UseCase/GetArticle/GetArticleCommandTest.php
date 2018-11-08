@@ -28,8 +28,8 @@ class GetArticleCommandTest extends TestCase
     {
         return [
             [
-                $this->factoryFaker->instance(ArticleID::class)
-            ]
+                $this->factoryFaker->instance(ArticleID::class),
+            ],
         ];
     }
 }
