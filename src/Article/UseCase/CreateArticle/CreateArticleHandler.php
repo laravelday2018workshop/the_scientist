@@ -1,12 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: christian
- * Date: 11/7/18
- * Time: 7:04 PM.
- */
 
 namespace Acme\Article\UseCase\CreateArticle;
 

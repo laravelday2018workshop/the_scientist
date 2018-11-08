@@ -50,9 +50,9 @@ class GetArticleController extends Controller
     private function serialize(Article $article)
     {
         return [
-            'id'    => (string)$article->id(),
-            'title' => (string)$article->title(),
-            'body'  => (string)$article->body(),
+            'id' => (string) $article->id(),
+            'title' => (string) $article->title(),
+            'body' => (string) $article->body(),
         ];
     }
 }
