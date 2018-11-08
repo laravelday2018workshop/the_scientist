@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Integration\Article\Repository;
+declare(strict_types=1);
 
+namespace App\Integration\Article\Repository;
 
 use Acme\Article\Article;
 use Acme\Article\ArticleCollection;
@@ -14,7 +15,6 @@ use Illuminate\Support\Collection;
 
 class InMemoryArticleRepository implements ArticleRepository
 {
-
     /** @var Collection<Article> */
     private $articles;
 
@@ -36,11 +36,11 @@ class InMemoryArticleRepository implements ArticleRepository
 //            throw new ArticleNotFound($articleID);
 //        }
 
-        if (!$this->articles->has((string)$articleID)) {
+        if (!$this->articles->has((string) $articleID)) {
             throw new ArticleNotFound($articleID);
         }
 
-        return $this->articles->get((string)$articleID);
+        return $this->articles->get((string) $articleID);
     }
 
     /**
@@ -61,6 +61,6 @@ class InMemoryArticleRepository implements ArticleRepository
      */
     public function add(Article $article): void
     {
-        $this->articles->put((string)$article->id(), $article);
+        $this->articles->put((string) $article->id(), $article);
     }
 }

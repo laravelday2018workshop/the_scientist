@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Acme\Article\UseCase\GetArticle;
 
 use Acme\Article\Article;
@@ -20,7 +22,7 @@ final class GetArticleHandler
     /**
      * @throws \Acme\Article\Repository\Exception\ArticleNotFound
      */
-    public function __invoke(GetArticleCommand $command):Article
+    public function __invoke(GetArticleCommand $command): Article
     {
         return $this->articleRepository->getById($command->getArticleID());
     }
