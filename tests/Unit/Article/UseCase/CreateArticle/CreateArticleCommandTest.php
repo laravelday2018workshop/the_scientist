@@ -10,6 +10,7 @@ use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
 use Acme\Reviewer\ValueObject\ReviewerID;
 use Tests\TestCase;
+
 /**
  * @covers \Acme\Article\UseCase\CreateArticle\CreateArticleCommand
  */

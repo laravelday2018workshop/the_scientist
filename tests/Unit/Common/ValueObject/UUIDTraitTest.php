@@ -13,7 +13,7 @@ use Tests\TestCase;
  * @covers \Acme\Article\ValueObject\ArticleID
  * @covers \Acme\Academic\ValueObject\AcademicID
  * @covers \Acme\Reviewer\ValueObject\ReviewerID
- * @covers Acme\Common\ValueObject\UUIDTrait
+ * @covers \Acme\Common\ValueObject\UUIDTrait
  */
 final class UUIDTraitTest extends TestCase
 {
@@ -25,7 +25,7 @@ final class UUIDTraitTest extends TestCase
     {
         $fake = UUIDFixture::fromUUID($uuid);
         $this->assertTrue($fake->isEquals($fake));
-        $this->assertSame($uuid, (string)$fake);
+        $this->assertSame($uuid, (string) $fake);
     }
 
     /**

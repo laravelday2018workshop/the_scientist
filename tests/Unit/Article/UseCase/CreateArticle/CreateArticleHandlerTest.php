@@ -16,6 +16,7 @@ use Acme\Reviewer\ValueObject\ReviewerID;
 use PHPUnit\Framework\Assert;
 use Prophecy\Argument;
 use Tests\TestCase;
+
 /**
  * @covers \Acme\Article\UseCase\CreateArticle\CreateArticleHandler
  */
