@@ -4,7 +4,7 @@ namespace Acme\Article\UseCase\GetArticle;
 
 use Acme\Article\ValueObject\ArticleID;
 
-class GetArticleCommand
+final class GetArticleCommand
 {
     /**
      * @var ArticleID

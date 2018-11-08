@@ -21,7 +21,6 @@ interface ArticleRepository
 
     /**
      * @throws ArticleNotFound
-     * @throws ImpossibleToRetrieveArticles
      */
     public function getById(ArticleID $articleID): Article;
 
