@@ -46,7 +46,7 @@ final class GetArticleHandlerTest extends TestCase
      */
     public function should_not_found_an_article()
     {
-        $this->setExpectedException(\Acme\Article\Repository\Exception\ArticleNotFound::class);
+        $this->expectException(\Acme\Article\Repository\Exception\ArticleNotFound::class);
 
         /** @var ArticleID $articleId */
         $articleId = $this->factoryFaker->instance(ArticleID::class);
