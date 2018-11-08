@@ -14,7 +14,7 @@ use Prophecy\Argument;
 use Tests\TestCase;
 
 /**
- * @covers \Acme\Article\UseCase\CreateArticle\CreateArticleHandler
+ * @covers \Acme\Article\UseCase\GetArticle\GetArticleHandler
  */
 final class GetArticleHandlerTest extends TestCase
 {
