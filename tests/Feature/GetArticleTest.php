@@ -32,14 +32,14 @@ class GetArticleTest extends TestCase
 
         $this->repository->add($article);
 
-        $response = $this->get('api/articles/'.$article->id());
+        $response = $this->get('api/articles/' . $article->id());
 
         $response->assertStatus(200);
         $response->assertJson(
             [
-                'id' => (string) $article->id(),
-                'title' => (string) $article->title(),
-                'body' => (string) $article->body(),
+                'id'    => (string)$article->id(),
+                'title' => (string)$article->title(),
+                'body'  => (string)$article->body(),
             ]
         );
     }
@@ -52,7 +52,7 @@ class GetArticleTest extends TestCase
         /** @var Article $article */
         $article = $this->factoryFaker->instance(Article::class);
 
-        $response = $this->get('api/articles/'.$article->id());
+        $response = $this->get('api/articles/' . $article->id());
 
         $response->assertStatus(404);
 
@@ -61,5 +61,18 @@ class GetArticleTest extends TestCase
                 'message' => 'Article not found',
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function should_throw_invalid_uui_exception()
+    {
+        $response = $this->get('api/articles/bad-uui');
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Invalid id given']);
+
+
     }
 }
