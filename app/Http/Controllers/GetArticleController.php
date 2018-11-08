@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use Acme\Article\Article;
+use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
@@ -22,12 +26,27 @@ class GetArticleController extends Controller
     {
         $command = new GetArticleCommand(ArticleID::fromUUID($id));
 
-        $article = $this->handler->__invoke($command);
+        try {
+            $article = $this->handler->__invoke($command);
+        } catch (ArticleNotFound $e) {
+            $response = [
+                'message' => 'Article not found',
+            ];
 
-        return response()->json([
-            'id'    => (string)$article->id(),
-            'title' => (string)$article->title(),
-            'body'  => (string)$article->body()
-        ]);
+            return response()->json($response, 404);
+        }
+
+        $response = $this->serialize($article);
+
+        return response()->json($response);
+    }
+
+    private function serialize(Article $article)
+    {
+        return [
+            'id' => (string) $article->id(),
+            'title' => (string) $article->title(),
+            'body' => (string) $article->body(),
+        ];
     }
 }

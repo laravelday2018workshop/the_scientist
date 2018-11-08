@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Article\UseCase\GetArticle;
 
-use Acme\Academic\ValueObject\AcademicID;
 use Acme\Article\Article;
 use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\Repository\Exception\ArticleNotFound;
-use Acme\Article\UseCase\CreateArticle\CreateArticleCommand;
-use Acme\Article\UseCase\CreateArticle\CreateArticleHandler;
 use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
-use Acme\Article\ValueObject\Body;
-use Acme\Article\ValueObject\Title;
-use Acme\Reviewer\ValueObject\ReviewerID;
-use PHPUnit\Framework\Assert;
 use Prophecy\Argument;
 use Tests\TestCase;
 
@@ -50,10 +43,11 @@ final class GetArticleHandlerTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Acme\Article\Repository\Exception\ArticleNotFound
      */
     public function should_not_found_an_article()
     {
+        $this->setExpectedException(\Acme\Article\Repository\Exception\ArticleNotFound::class);
+
         /** @var ArticleID $articleId */
         $articleId = $this->factoryFaker->instance(ArticleID::class);
 
@@ -62,18 +56,16 @@ final class GetArticleHandlerTest extends TestCase
         $repository->getById($articleId)
                    ->willThrow(new ArticleNotFound($articleId));
 
-
         $handler = new GetArticleHandler($repository->reveal());
 
         $handler(new GetArticleCommand($articleId));
     }
 
-
     public function articleDataProvider(): array
     {
         return [
             [
-                $this->factoryFaker->instance(Article::class)
+                $this->factoryFaker->instance(Article::class),
             ],
         ];
     }

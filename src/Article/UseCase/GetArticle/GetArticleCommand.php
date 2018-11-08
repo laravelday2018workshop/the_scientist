@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Acme\Article\UseCase\GetArticle;
 
 use Acme\Article\ValueObject\ArticleID;
