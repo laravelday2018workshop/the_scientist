@@ -32,7 +32,7 @@ class GetArticleTest extends TestCase
 
         $this->repository->add($article);
 
-        $response = $this->get('api/articles/'.$article->id());
+        $response = $this->get('api/articles/' . $article->id());
 
         $response->assertStatus(200);
         $response->assertJson(
@@ -52,7 +52,7 @@ class GetArticleTest extends TestCase
         /** @var Article $article */
         $article = $this->factoryFaker->instance(Article::class);
 
-        $response = $this->get('api/articles/'.$article->id());
+        $response = $this->get('api/articles/' . $article->id());
 
         $response->assertStatus(404);
 
