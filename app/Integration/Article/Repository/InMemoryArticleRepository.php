@@ -15,8 +15,13 @@ use Illuminate\Support\Collection;
 
 class InMemoryArticleRepository implements ArticleRepository
 {
+    const CONNECTION_LOST_MESSAGE = 'DB Connection lost';
+
     /** @var Collection<Article> */
     private $articles;
+
+    /** @var bool */
+    private $connectionLost = false;
 
     public function __construct()
     {
@@ -25,16 +30,11 @@ class InMemoryArticleRepository implements ArticleRepository
 
     /**
      * @throws ArticleNotFound
+     * @throws \Exception
      */
     public function getById(ArticleID $articleID): Article
     {
-//        $articles = $this->articles->filter(function (Article $article) use ($articleID) {
-//            return $articleID->isEquals($article->id());
-//        });
-//
-//        if ($articles->count() !== 1) {
-//            throw new ArticleNotFound($articleID);
-//        }
+        $this->checkConnection();
 
         if (!$this->articles->has((string) $articleID)) {
             throw new ArticleNotFound($articleID);
@@ -62,5 +62,20 @@ class InMemoryArticleRepository implements ArticleRepository
     public function add(Article $article): void
     {
         $this->articles->put((string) $article->id(), $article);
+    }
+
+    public function looseConnection(): void
+    {
+        $this->connectionLost = true;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function checkConnection()
+    {
+        if ($this->connectionLost) {
+            throw new \Exception(self::CONNECTION_LOST_MESSAGE);
+        }
     }
 }

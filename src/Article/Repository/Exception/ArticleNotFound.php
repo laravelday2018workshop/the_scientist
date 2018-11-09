@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Acme\Article\Repository\Exception;
 
+use Acme\Article\Article;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Common\Exception\EntityNotFound;
 use Throwable;
@@ -27,7 +28,7 @@ final class ArticleNotFound extends \Exception implements EntityNotFound
 
     public function getEntityName(): string
     {
-        return 'Article';
+        return Article::class;
     }
 
     public function getEntityId(): string

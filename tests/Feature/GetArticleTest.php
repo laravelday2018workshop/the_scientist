@@ -66,11 +66,31 @@ class GetArticleTest extends TestCase
     /**
      * @test
      */
-    public function should_throw_invalid_uui_exception()
+    public function should_give_invalid_id()
     {
         $response = $this->get('api/articles/bad-uui');
 
         $response->assertStatus(400);
         $response->assertJson(['message' => 'Invalid id given']);
+    }
+
+    /**
+     * @test
+     */
+    public function should_give_unexpected_error()
+    {
+        /** @var Article $article */
+        $article = $this->factoryFaker->instance(Article::class);
+
+        $this->repository->looseConnection();
+
+        $response = $this->get('api/articles/'.$article->id());
+
+        $response->assertStatus(500);
+        $response->assertJson(
+            [
+                'message' => InMemoryArticleRepository::CONNECTION_LOST_MESSAGE,
+            ]
+        );
     }
 }
