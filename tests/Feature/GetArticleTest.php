@@ -68,10 +68,12 @@ class GetArticleTest extends TestCase
      */
     public function should_give_invalid_id()
     {
-        $response = $this->get('api/articles/bad-uui');
+        $id = 'this-is-a-bad-uui';
+
+        $response = $this->get('api/articles/'.$id);
 
         $response->assertStatus(400);
-        $response->assertJson(['message' => 'Invalid id given']);
+        $response->assertJson(['message' => "The given value is not valid to create an articleID. Given \"{$id}\""]);
     }
 
     /**

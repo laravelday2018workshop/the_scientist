@@ -9,7 +9,6 @@ use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
-use Acme\Common\ValueObject\Exception\InvalidID;
 use Illuminate\Http\JsonResponse;
 
 class GetArticleController extends Controller
@@ -29,16 +28,8 @@ class GetArticleController extends Controller
      */
     public function __invoke(string $id): JsonResponse
     {
-        try {
-            $command = new GetArticleCommand(ArticleID::fromUUID($id));
-            $article = $this->handler->__invoke($command);
-        } catch (InvalidID $ex) {
-            $response = [
-                'message' => 'Invalid id given',
-            ];
-
-            return response()->json($response, 400);
-        }
+        $command = new GetArticleCommand(ArticleID::fromUUID($id));
+        $article = $this->handler->__invoke($command);
 
         $response = $this->serialize($article);
 
