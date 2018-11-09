@@ -58,7 +58,7 @@ class GetArticleTest extends TestCase
 
         $response->assertJson(
             [
-                'message' => sprintf('Article with ID "%s" was not found', $article->id())
+                'message' => \sprintf('Article with ID "%s" was not found', $article->id()),
             ]
         );
     }

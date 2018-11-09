@@ -27,7 +27,7 @@ class GetArticleController extends Controller
     /**
      * @throws ArticleNotFound
      */
-    public function __invoke(string $id):JsonResponse
+    public function __invoke(string $id): JsonResponse
     {
         try {
             $command = new GetArticleCommand(ArticleID::fromUUID($id));

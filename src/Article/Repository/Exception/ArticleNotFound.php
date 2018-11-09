@@ -32,6 +32,6 @@ final class ArticleNotFound extends \Exception implements EntityNotFound
 
     public function getEntityId(): string
     {
-        return (string)$this->articleID;
+        return (string) $this->articleID;
     }
 }
