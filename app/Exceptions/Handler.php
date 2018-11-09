@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
+use Acme\Common\Exception\EntityNotFound;
 use Exception;
+use Illuminate\Contracts\Queue\EntityNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -49,6 +51,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof EntityNotFound) {
+            return response()->json(
+                [
+                    'message' => sprintf(
+                        '%s with ID "%s" was not found',
+                        $exception->getEntityName(),
+                        $exception->getEntityId()
+                    )
+                ],
+                404
+            );
+        }
+
         return parent::render($request, $exception);
     }
 }

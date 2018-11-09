@@ -10,6 +10,7 @@ use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Common\ValueObject\Exception\InvalidID;
+use Illuminate\Http\JsonResponse;
 
 class GetArticleController extends Controller
 {
@@ -23,17 +24,14 @@ class GetArticleController extends Controller
         $this->handler = $handler;
     }
 
-    public function __invoke(string $id)
+    /**
+     * @throws ArticleNotFound
+     */
+    public function __invoke(string $id):JsonResponse
     {
         try {
             $command = new GetArticleCommand(ArticleID::fromUUID($id));
             $article = $this->handler->__invoke($command);
-        } catch (ArticleNotFound $ex) {
-            $response = [
-                'message' => 'Article not found',
-            ];
-
-            return response()->json($response, 404);
         } catch (InvalidID $ex) {
             $response = [
                 'message' => 'Invalid id given',
