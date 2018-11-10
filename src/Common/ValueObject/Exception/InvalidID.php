@@ -8,7 +8,7 @@ use Throwable;
 
 final class InvalidID extends \InvalidArgumentException
 {
-    public const ERROR_MESSAGE_FORMAT = 'The given value is not valid to create an articleID. Given "%s"';
+    public const ERROR_MESSAGE_FORMAT = 'The given value is not valid. Given "%s"';
 
     public function __construct($invalidValue, Throwable $previous = null)
     {

@@ -22,7 +22,7 @@ trait UUIDTrait
     }
 
     /**
-     * @throws InvalidID()
+     * @throws InvalidID
      */
     public static function fromUUID(string $uuid): self
     {

@@ -18,7 +18,7 @@ COPY ./ /app
 # Install dependeies for PHP
 RUN apt-get update && \
     apt-get install -y git zlib1g-dev && \
-    docker-php-ext-install zip
+    docker-php-ext-install zip pdo pdo_mysql
 
 # Install dependecies (dev included) and run framework commands
 COPY --from=composer /usr/bin/composer /usr/bin/composer
@@ -28,6 +28,7 @@ RUN php artisan key:generate
 
 # Install XDebug and add XDebug configurations
 RUN yes | pecl install xdebug
+RUN mkdir /var/log/xdebug
 RUN echo 'xdebug.idekey=SCIENCE' >> $XDEBUG_CONFIGURATION_FILE && \
     echo 'xdebug.remote_enable=1' >> $XDEBUG_CONFIGURATION_FILE && \
     echo 'xdebug.remote_port=9090' >> $XDEBUG_CONFIGURATION_FILE && \
@@ -44,4 +45,4 @@ RUN echo 'xdebug.idekey=SCIENCE' >> $XDEBUG_CONFIGURATION_FILE && \
     echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" >> $XDEBUG_CONFIGURATION_FILE
 
 EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0
+CMD php artisan migrate && php artisan serve --host=0.0.0.0
