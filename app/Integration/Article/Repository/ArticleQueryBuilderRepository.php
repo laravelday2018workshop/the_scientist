@@ -12,7 +12,6 @@ use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
 use Acme\Article\Repository\Exception\ImpossibleToSaveArticle;
 use Acme\Article\ValueObject\ArticleID;
 use App\Integration\Article\Mapper\ArticleMapper;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Psr\Log\LoggerInterface;
@@ -24,7 +23,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
     private const TABLE_NAME = 'articles';
 
     /**
-     * @var QueryBuilder
+     * @var DB
      */
     private $database;
 
@@ -32,6 +31,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
      * @var ArticleMapper
      */
     private $articleMapper;
+
     /**
      * @var LoggerInterface
      */
@@ -48,7 +48,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
     {
         try {
             $rawArticle =
-                DB::table(self::TABLE_NAME)
+                $this->database::table(self::TABLE_NAME)
                     ->select()
                     ->where('id', '=', (string) $articleID)
                     ->first();
@@ -68,7 +68,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection
     {
         try {
-            $rawArticles = DB::table(self::TABLE_NAME)->select()->skip($skip)->take($take)->get();
+            $rawArticles = $this->database::table(self::TABLE_NAME)->select()->skip($skip)->take($take)->get();
         } catch (QueryException $e) {
             $this->logger->warning('database failure', ['exception' => $e]);
             throw new ImpossibleToRetrieveArticles($e);
@@ -94,7 +94,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
         $rawArticle = $this->articleMapper->fromArticle($article);
 
         try {
-            $insert = DB::table(self::TABLE_NAME)->insert($rawArticle);
+            $insert = $this->database::table(self::TABLE_NAME)->insert($rawArticle);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'article' => $rawArticle]);
             throw new ImpossibleToSaveArticle($e);
@@ -114,7 +114,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
         $rawArticle = $this->articleMapper->fromArticle($article);
 
         try {
-            $update = DB::table(self::TABLE_NAME)->update($rawArticle);
+            $update = $this->database::table(self::TABLE_NAME)->update($rawArticle);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'article' => $rawArticle]);
             throw new ImpossibleToSaveArticle($e);

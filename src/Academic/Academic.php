@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Acme\Academic;
 
 use Acme\Academic\ValueObject\AcademicID;
+use Acme\Article\ValueObject\ArticleID;
 
 final class Academic
 {
@@ -13,7 +14,7 @@ final class Academic
      */
     private $academicID;
 
-    public function __construct(self $academicID)
+    public function __construct(ArticleID $academicID)
     {
         $this->academicID = $academicID;
     }

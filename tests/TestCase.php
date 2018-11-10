@@ -75,7 +75,7 @@ abstract class TestCase extends BaseTestCase
             return AcademicID::fromUUID($faker->uuid);
         });
 
-        $factoryMuffin->define(Reviewer::class)->setMaker(function () use ($factoryMuffin): ReviewerID {
+        $factoryMuffin->define(Reviewer::class)->setMaker(function () use ($factoryMuffin): Reviewer {
             return new Reviewer($factoryMuffin->instance(ReviewerID::class));
         });
 

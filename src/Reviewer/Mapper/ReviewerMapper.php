@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Acme\Reviewer\Mapper;
 
-use Acme\Reviewer\ReviewerID;
+use Acme\Reviewer\Reviewer;
 
 interface ReviewerMapper
 {
-    public function fromArray(array $rawReviewer): ReviewerID;
+    public function fromArray(array $rawReviewer): Reviewer;
 
-    public function fromReviewer(ReviewerID $reviewer): array;
+    public function fromReviewer(Reviewer $reviewer): array;
 }
