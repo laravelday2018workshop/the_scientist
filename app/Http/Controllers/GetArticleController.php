@@ -4,55 +4,42 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Acme\Article\Article;
 use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
-use Acme\Common\ValueObject\Exception\InvalidID;
+use App\Http\Requests\GetArticleRequest;
+use App\Integration\Article\Mapper\ViewArticleMapper;
 
-class GetArticleController extends Controller
+final class GetArticleController extends Controller
 {
     /**
      * @var GetArticleHandler
      */
     private $handler;
+    /**
+     * @var ViewArticleMapper
+     */
+    private $viewArticleMapper;
 
-    public function __construct(GetArticleHandler $handler)
+    public function __construct(GetArticleHandler $handler, ViewArticleMapper $viewArticleMapper)
     {
         $this->handler = $handler;
+        $this->viewArticleMapper = $viewArticleMapper;
     }
 
-    public function __invoke(string $id)
+    public function __invoke(GetArticleRequest $request)
     {
+        $id = $request->route()->parameter('id');
         try {
-            $command = new GetArticleCommand(ArticleID::fromUUID($id));
-            $article = $this->handler->__invoke($command);
-        } catch (ArticleNotFound $ex) {
-            $response = [
-                'message' => 'Article not found',
-            ];
+            $article = ($this->handler)(new GetArticleCommand(ArticleID::fromUUID($id)));
+        } catch (ArticleNotFound $e) {
+            $response = ['message' => $e->getMessage()];
 
             return response()->json($response, 404);
-        } catch (InvalidID $ex) {
-            $response = [
-                'message' => 'Invalid id given',
-            ];
-
-            return response()->json($response, 400);
         }
-
-        $response = $this->serialize($article);
+        $response = $this->viewArticleMapper->fromArticle($article);
 
         return response()->json($response);
-    }
-
-    private function serialize(Article $article)
-    {
-        return [
-            'id' => (string) $article->id(),
-            'title' => (string) $article->title(),
-            'body' => (string) $article->body(),
-        ];
     }
 }

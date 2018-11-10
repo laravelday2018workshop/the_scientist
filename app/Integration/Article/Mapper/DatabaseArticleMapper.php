@@ -14,6 +14,16 @@ use DateTimeImmutable;
 
 final class DatabaseArticleMapper implements ArticleMapper
 {
+    /**
+     * @var FromArticlePartialMapping
+     */
+    private $fromArticlePartialMapping;
+
+    public function __construct(FromArticlePartialMapping $fromArticlePartialMapping)
+    {
+        $this->fromArticlePartialMapping = $fromArticlePartialMapping;
+    }
+
     public function fromArray(array $rawArticle): Article
     {
         return new Article(
@@ -30,5 +40,6 @@ final class DatabaseArticleMapper implements ArticleMapper
 
     public function fromArticle(Article $article): array
     {
+        return ($this->fromArticlePartialMapping)($article);
     }
 }

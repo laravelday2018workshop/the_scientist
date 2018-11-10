@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  scientist:
+    image: scientist:latest
+    build:
+      context: ./
+    volumes:
+    - ./:/app/
+    depends_on:
+    - database
+    networks:
+    - frontend
+    - backend
+    ports:
+    - "80:8000"
+
+  database:
+    image: mysql:latest
+    volumes:
+    - ./storage/db/:/var/lib/mysql/
+    ports:
+    - "3306:3306"
+    networks:
+    - backend
+    env_file:
+    - .env
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

@@ -2,21 +2,11 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\CreateArticleController;
+use App\Http\Controllers\GetArticleController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/', function () {
+    return 'Api ready';
 });
-
-Route::get('/articles/{id}', 'GetArticleController');
+Route::get('/articles/{id}', GetArticleController::class);
+Route::post('/articles/', CreateArticleController::class);

@@ -14,18 +14,13 @@ final class CreateArticleHandler
      */
     private $articleRepository;
 
-    /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
-
     public function __construct(ArticleRepository $articleRepository)
     {
         $this->articleRepository = $articleRepository;
-//        $this->eventDispatcher   = $eventDispatcher;
     }
 
-    public function __invoke(CreateArticleCommand $command): void
+    /** TODO: Use Event dispatcher in order to communicate that the article was created */
+    public function __invoke(CreateArticleCommand $command): Article
     {
         $article = Article::create(
             $this->articleRepository->nextID(),
@@ -38,6 +33,6 @@ final class CreateArticleHandler
 
         $this->articleRepository->add($article);
 
-        //$this->eventDispatcher->dispatch(new ArticleCreated())
+        return $article;
     }
 }
