@@ -105,4 +105,24 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
             throw new ImpossibleToSaveArticle();
         }
     }
+
+    /**
+     * @throws ImpossibleToSaveArticle
+     */
+    public function update(Article $article): void
+    {
+        $rawArticle = $this->articleMapper->fromArticle($article);
+
+        try {
+            $update = DB::table(self::TABLE_NAME)->update($rawArticle);
+        } catch (QueryException $e) {
+            $this->logger->error('database failure', ['exception' => $e, 'article' => $rawArticle]);
+            throw new ImpossibleToSaveArticle($e);
+        }
+
+        if (0 === $update) {
+            $this->logger->warning('impossible to update article', ['article' => $rawArticle]);
+            throw new ImpossibleToSaveArticle();
+        }
+    }
 }

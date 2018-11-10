@@ -9,6 +9,10 @@ use Acme\Article\Repository\ArticleRepository;
 use App\Integration\Article\Repository\InMemoryArticleRepository;
 use Tests\TestCase;
 
+/**
+ * @covers \App\Http\Controllers\GetArticleController
+ * @covers \App\Http\Requests\GetArticleRequest
+ */
 class GetArticleTest extends TestCase
 {
     /** @var ArticleRepository */
