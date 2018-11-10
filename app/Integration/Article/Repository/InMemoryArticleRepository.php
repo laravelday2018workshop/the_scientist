@@ -45,4 +45,9 @@ class InMemoryArticleRepository implements ArticleRepository
     {
         $this->articles->put((string) $article->id(), $article);
     }
+
+    public function update(Article $article): void
+    {
+        $this->articles->put((string) $article->id(), $article);
+    }
 }
