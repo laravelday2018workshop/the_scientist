@@ -17,7 +17,7 @@ final class FromArticlePartialMapping
             'academic_id' => (string) $article->academicID(),
             'reviewer_id' => (string) $article->reviewerID(),
             'published_at' => ($publishDate = $article->publishDate()) ? $publishDate->format('Y-m-d H:i:s') : null,
-            'created_at' => ($creationDate = $article->creationDate()) ? $creationDate->format('Y-m-d H:i:s') : null,
+            'created_at' => $article->creationDate()->format('Y-m-d H:i:s'),
             'updated_at' => ($lastUpdateDate = $article->lastUpdateDate()) ? $lastUpdateDate->format('Y-m-d H:i:s') : null,
         ];
     }
