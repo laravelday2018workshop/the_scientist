@@ -67,6 +67,10 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
 
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection
     {
+        if ($take > ArticleRepository::MAX_SIZE) {
+            $take = ArticleRepository::MAX_SIZE;
+        }
+
         try {
             $rawArticles = DB::table(self::TABLE_NAME)->select()->skip($skip)->take($take)->get();
         } catch (QueryException $e) {
