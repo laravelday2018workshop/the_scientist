@@ -33,7 +33,12 @@ class InMemoryArticleRepository implements ArticleRepository
 
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection
     {
-        return new ArticleCollection(...$this->articles->values());
+        if ($take > ArticleRepository::MAX_SIZE) {
+            $take = ArticleRepository::MAX_SIZE;
+        }
+        $articles = $this->articles->splice($skip)->take($take)->values();
+
+        return new ArticleCollection(...$articles);
     }
 
     public function nextID(): ArticleID
