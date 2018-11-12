@@ -36,4 +36,9 @@ interface ArticleRepository
      * @throws ImpossibleToSaveArticle
      */
     public function add(Article $article): void;
+
+    /**
+     * @throws ImpossibleToSaveArticle
+     */
+    public function update(Article $article): void;
 }

@@ -73,12 +73,13 @@ final class Article
         $this->lastUpdateDate = $lastUpdateDate;
     }
 
-    public static function create(ArticleID $articleID,
-                                  Title $title,
-                                  Body $body,
-                                  AcademicID $academicID,
-                                  ReviewerID $reviewerID,
-                                  DateTimeImmutable $creationDate)
+    public static function create(
+        ArticleID $articleID,
+        Title $title,
+        Body $body,
+        AcademicID $academicID,
+        ReviewerID $reviewerID,
+        DateTimeImmutable $creationDate)
     {
         return new self($articleID, $title, $body, $academicID, $reviewerID, null, $creationDate, null);
     }
@@ -121,5 +122,12 @@ final class Article
     public function lastUpdateDate(): ?DateTimeImmutable
     {
         return $this->lastUpdateDate;
+    }
+
+    public function updateWithReviewChanges(Title $title, Body $body): void
+    {
+        $this->title = $title;
+        $this->body = $body;
+        $this->lastUpdateDate = new DateTimeImmutable();
     }
 }
