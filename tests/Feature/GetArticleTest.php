@@ -62,7 +62,7 @@ class GetArticleTest extends TestCase
         $article = $this->factoryFaker->instance(Article::class);
         $response = $this->get("articles/{$article->id()}");
         $response->assertStatus(404);
-        $response->assertJson(['message' => "Article with ID: \"{$article->id()}\" was not found"]);
+        $response->assertJson(['message' => "Article with ID \"{$article->id()}\" was not found"]);
     }
 
     /**
