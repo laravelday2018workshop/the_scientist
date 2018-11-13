@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Acme\Academic\UseCase\GetAcademic;
 
 use Acme\Academic\ValueObject\AcademicID;

@@ -16,7 +16,7 @@ use Tests\TestCase;
 /**
  * @covers \Acme\Academic\UseCase\GetAcademic\GetAcademicHandler
  */
-final class GetAcademicHandlerTest extends TestCase
+final class GetArticleHandlerTest extends TestCase
 {
     /**
      * @test
