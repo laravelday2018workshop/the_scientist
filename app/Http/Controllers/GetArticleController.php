@@ -28,16 +28,15 @@ final class GetArticleController extends Controller
         $this->viewArticleMapper = $viewArticleMapper;
     }
 
+    /**
+     * @throws ArticleNotFound
+     */
     public function __invoke(GetArticleRequest $request)
     {
         $id = $request->route()->parameter('id');
-        try {
-            $article = ($this->handler)(new GetArticleCommand(ArticleID::fromUUID($id)));
-        } catch (ArticleNotFound $e) {
-            $response = ['message' => $e->getMessage()];
+        $command = new GetArticleCommand(ArticleID::fromUUID($id));
+        $article = $this->handler->__invoke($command);
 
-            return response()->json($response, 404);
-        }
         $response = $this->viewArticleMapper->fromArticle($article);
 
         return response()->json($response);

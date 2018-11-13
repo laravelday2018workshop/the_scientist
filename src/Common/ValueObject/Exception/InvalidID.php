@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Acme\Common\ValueObject\Exception;
 
+use Acme\Common\Exception\InvalidInput;
 use Throwable;
 
-final class InvalidID extends \InvalidArgumentException
+final class InvalidID extends \InvalidArgumentException implements InvalidInput
 {
     public const ERROR_MESSAGE_FORMAT = 'The given value is not valid. Given "%s"';
 

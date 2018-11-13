@@ -10,6 +10,7 @@ use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
 use Acme\Article\Repository\Exception\ImpossibleToSaveArticle;
 use Acme\Article\ValueObject\ArticleID;
+use Acme\Common\Exception\UnexpectedError;
 
 interface ArticleRepository
 {
@@ -30,6 +31,9 @@ interface ArticleRepository
      */
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection;
 
+    /**
+     * @throws UnexpectedError
+     */
     public function nextID(): ArticleID;
 
     /**
