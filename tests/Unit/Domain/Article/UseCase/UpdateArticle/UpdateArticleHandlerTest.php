@@ -28,8 +28,8 @@ final class UpdateArticleHandlerTest extends TestCase
      * @param UpdateArticleCommand $command
      *
      * @throws \Acme\Article\Repository\Exception\ArticleNotFound
-     * @throws \Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles
-     * @throws \Acme\Article\Repository\Exception\ImpossibleToSaveArticle
+     * @throws \Acme\Article\Repository\Exception\ImpossibleToRetrieveAcademics
+     * @throws \Acme\Article\Repository\Exception\ImpossibleToSaveAcademic
      */
     public function should_update_an_article(Article $article, UpdateArticleCommand $command): void
     {
