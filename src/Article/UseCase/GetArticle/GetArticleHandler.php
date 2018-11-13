@@ -7,7 +7,7 @@ namespace Acme\Article\UseCase\GetArticle;
 use Acme\Article\Article;
 use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\Repository\Exception\ArticleNotFound;
-use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
+use Acme\Article\Repository\Exception\ImpossibleToRetrieveAcademis;
 
 final class GetArticleHandler
 {
@@ -23,7 +23,7 @@ final class GetArticleHandler
 
     /**
      * @throws ArticleNotFound
-     * @throws ImpossibleToRetrieveArticles
+     * @throws ImpossibleToRetrieveAcademics
      */
     public function __invoke(GetArticleCommand $command): Article
     {

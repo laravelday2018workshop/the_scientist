@@ -7,7 +7,7 @@ namespace Acme\Article\UseCase\ListArticles;
 use Acme\Article\ArticleCollection;
 use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\Repository\Exception\ArticleNotFound;
-use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
+use Acme\Article\Repository\Exception\ImpossibleToRetrieveAcademics;
 
 final class ListArticlesHandler
 {
@@ -23,7 +23,7 @@ final class ListArticlesHandler
 
     /**
      * @throws ArticleNotFound
-     * @throws ImpossibleToRetrieveArticles
+     * @throws ImpossibleToRetrieveAcademics
      */
     public function __invoke(ListArticlesCommand $command): ArticleCollection
     {

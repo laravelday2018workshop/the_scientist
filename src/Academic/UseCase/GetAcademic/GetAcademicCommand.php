@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Acme\Academic;
+namespace Acme\Academic\UseCase\GetAcademic;
 
 use Acme\Academic\ValueObject\AcademicID;
 
-final class Academic
+final class GetAcademicCommand
 {
     /**
      * @var AcademicID
@@ -18,7 +16,7 @@ final class Academic
         $this->academicID = $academicID;
     }
 
-    public function id(): AcademicID
+    public function getAcademicID(): AcademicID
     {
         return $this->academicID;
     }
