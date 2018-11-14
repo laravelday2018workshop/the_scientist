@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Acme\Academic\Mapper;
+namespace App\Integration\Academic\Mapper;
 
 use Acme\Academic\Academic;
 
