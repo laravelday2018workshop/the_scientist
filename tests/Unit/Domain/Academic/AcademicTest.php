@@ -1,9 +1,11 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: christian
  * Date: 11/14/18
- * Time: 11:48 AM
+ * Time: 11:48 AM.
  */
 
 namespace Tests\Unit\Domain\Academic;

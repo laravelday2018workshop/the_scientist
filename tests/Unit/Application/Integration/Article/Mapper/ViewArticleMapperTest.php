@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Domain\Article\Mapper;
+namespace Tests\Unit\Application\Integration\Article\Mapper;
 
 use Acme\Article\Article;
 use App\Integration\Article\Mapper\FromArticlePartialMapping;
