@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Test\Unit\Application\Rules;
+namespace Tests\Unit\Application\Rules;
 
 use App\Rules\AcademicIDRule;
 use Faker\Generator as Faker;
 use Tests\TestCase;
 
+/**
+ * @covers \App\Rules\AcademicIDRule
+ */
 class AcademicIDRuleTest extends TestCase
 {
     /**
