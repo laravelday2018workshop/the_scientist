@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use Acme\Academic\ValueObject\Excpetion\InvalidAcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber;
 use Illuminate\Contracts\Validation\Rule;
 
 class AcademicIDRule implements Rule

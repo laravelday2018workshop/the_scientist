@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Acme\Academic\ValueObject\Excpetion;
+namespace Acme\Academic\ValueObject\Exception;
 
 use Acme\Common\Exception\InvalidInput;
 use Throwable;

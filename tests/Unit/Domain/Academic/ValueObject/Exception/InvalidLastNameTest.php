@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Academic\ValueObject\Exception;
 
-use Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Exception\InvalidLastName;
+use Acme\Academic\ValueObject\LastName;
 use Tests\TestCase;
 
 /**
- * @covers \Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber
+ * @covers \Acme\Academic\ValueObject\Exception\InvalidLastName
  */
-final class InvalidAcademicRegistrationNumberTest extends TestCase
+final class InvalidLastNameTest extends TestCase
 {
     /**
      * @test
@@ -18,8 +19,8 @@ final class InvalidAcademicRegistrationNumberTest extends TestCase
      */
     public function should_set_error_message($invalidValue): void
     {
-        $error = new InvalidAcademicRegistrationNumber($invalidValue);
-        $expectedMessage = \sprintf(InvalidAcademicRegistrationNumber::ERROR_MESSAGE_FORMAT, $invalidValue);
+        $error = new InvalidLastName($invalidValue);
+        $expectedMessage = \sprintf(InvalidLastName::LENGTH_MESSAGE_FORMAT, $invalidValue, LastName::MIN_LENGTH, LastName::MAX_LENGTH);
         $this->assertSame($expectedMessage, $error->getMessage());
     }
 
@@ -27,7 +28,7 @@ final class InvalidAcademicRegistrationNumberTest extends TestCase
     {
         return [
             [1],
-            ['an invalid number'],
+            ['a'],
             [''],
         ];
     }
