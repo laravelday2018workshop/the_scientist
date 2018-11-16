@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Acme\Academic\ValueObject;
 
-use Acme\Academic\ValueObject\Excpetion\InvalidAcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber;
 use Acme\Common\ValueObject\EntityID;
 
 final class AcademicRegistrationNumber implements EntityID

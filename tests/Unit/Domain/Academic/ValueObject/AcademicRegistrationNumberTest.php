@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Academic\ValueObject;
 
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use Acme\Academic\ValueObject\Excpetion\InvalidAcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber;
 use Error;
 use PHPUnit\Framework\TestCase;
 
