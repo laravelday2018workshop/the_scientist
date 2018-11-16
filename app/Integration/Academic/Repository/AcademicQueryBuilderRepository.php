@@ -10,16 +10,17 @@ use Acme\Academic\Repository\AcademicRepository;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Common\Query\Pagination;
 use App\Integration\Academic\Mapper\AcademicMapper;
 use App\Integration\Common\Query\CrudFacade;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 final class AcademicQueryBuilderRepository implements AcademicRepository
 {
+    private const SEQUENCE_ACADEMIC_ID = 'sequence_academic_id';
     /**
      * @var AcademicMapper
      */
@@ -34,17 +35,24 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      * @var CrudFacade
      */
     private $query;
+    /**
+     * @var DatabaseManager
+     */
+    private $databaseManager;
 
-    public function __construct(CrudFacade $query,
-                                AcademicMapper $academicMapper,
-                                LoggerInterface $logger
+    public function __construct(
+        DatabaseManager $databaseManager,
+        CrudFacade $query,
+        AcademicMapper $academicMapper,
+        LoggerInterface $logger
     ) {
         $this->academicMapper = $academicMapper;
         $this->logger = $logger;
         $this->query = $query;
+        $this->databaseManager = $databaseManager;
     }
 
-    public function getById(AcademicID $academicID): Academic
+    public function getById(AcademicRegistrationNumber $academicID): Academic
     {
         try {
             $rawAcademic = $this->query->getById($academicID);
@@ -75,9 +83,11 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
         return $this->serializeList($rawAcademics);
     }
 
-    public function nextID(): AcademicID
+    public function nextID(): AcademicRegistrationNumber
     {
-        return AcademicID::fromUUID((string) Uuid::uuid4());
+        $nextNumber = $this->databaseManager->table(self::SEQUENCE_ACADEMIC_ID)->increment('id');
+
+        return AcademicRegistrationNumber::fromInteger($nextNumber);
     }
 
     /**
@@ -101,7 +111,7 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
     {
         try {
             $rawAcademic = $this->academicMapper->fromAcademic($academic);
-            $this->query->update($academic->id(), $rawAcademic);
+            $this->query->update($academic->registrationNumber(), $rawAcademic);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'academic' => $rawAcademic]);
             throw new ImpossibleToSaveAcademic($e);

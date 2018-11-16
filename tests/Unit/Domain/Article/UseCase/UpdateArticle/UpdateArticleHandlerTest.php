@@ -44,7 +44,7 @@ final class UpdateArticleHandlerTest extends TestCase
                 Assert::assertSame($command->getTitle(), $updatedArticle->title());
                 Assert::assertSame($command->getBody(), $updatedArticle->body());
                 Assert::assertSame($article->reviewerID(), $updatedArticle->reviewerID());
-                Assert::assertSame($article->academicID(), $updatedArticle->academicID());
+                Assert::assertSame($article->academicRegistrationNumber(), $updatedArticle->academicRegistrationNumber());
                 Assert::assertNotNull($updatedArticle->lastUpdateDate());
             });
 

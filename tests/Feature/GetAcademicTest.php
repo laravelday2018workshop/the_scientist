@@ -36,12 +36,12 @@ class GetAcademicTest extends TestCase
 
         $this->repository->add($academic);
 
-        $response = $this->get("academics/{$academic->id()}");
+        $response = $this->get("academics/{$academic->registrationNumber()}");
 
         $response->assertStatus(200);
         $response->assertJson(
             [
-                'id' => (string) $academic->id(),
+                'id' => (string) $academic->registrationNumber(),
             ]
         );
     }
@@ -53,9 +53,9 @@ class GetAcademicTest extends TestCase
     {
         /** @var Academic $academic */
         $academic = $this->factoryFaker->instance(Academic::class);
-        $response = $this->get("academics/{$academic->id()}");
+        $response = $this->get("academics/{$academic->registrationNumber()}");
         $response->assertStatus(404);
-        $response->assertJson(['message' => "Academic with ID \"{$academic->id()}\" was not found"]);
+        $response->assertJson(['message' => "Academic with ID \"{$academic->registrationNumber()}\" was not found"]);
     }
 
     /**

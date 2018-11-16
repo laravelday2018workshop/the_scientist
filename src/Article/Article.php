@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Acme\Article;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
@@ -29,9 +29,9 @@ final class Article
     private $body;
 
     /**
-     * @var AcademicID
+     * @var AcademicRegistrationNumber
      */
-    private $academicID;
+    private $academicRegistrationNumber;
 
     /**
      * @var ReviewerID
@@ -57,7 +57,7 @@ final class Article
         ArticleID $articleID,
         Title $title,
         Body $body,
-        AcademicID $academicID,
+        AcademicRegistrationNumber $academicID,
         ReviewerID $reviewerID,
         ?DateTimeImmutable $publishDate,
         DateTimeImmutable $creationDate,
@@ -66,7 +66,7 @@ final class Article
         $this->articleID = $articleID;
         $this->title = $title;
         $this->body = $body;
-        $this->academicID = $academicID;
+        $this->academicRegistrationNumber = $academicID;
         $this->reviewerID = $reviewerID;
         $this->publishDate = $publishDate;
         $this->creationDate = $creationDate;
@@ -77,7 +77,7 @@ final class Article
         ArticleID $articleID,
         Title $title,
         Body $body,
-        AcademicID $academicID,
+        AcademicRegistrationNumber $academicID,
         ReviewerID $reviewerID,
         DateTimeImmutable $creationDate)
     {
@@ -99,9 +99,9 @@ final class Article
         return $this->body;
     }
 
-    public function academicID(): AcademicID
+    public function academicRegistrationNumber(): AcademicRegistrationNumber
     {
-        return $this->academicID;
+        return $this->academicRegistrationNumber;
     }
 
     public function reviewerID(): ReviewerID

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Article\UseCase\CreateArticle;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
 use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\UseCase\CreateArticle\CreateArticleCommand;
@@ -41,7 +41,7 @@ final class CreateArticleHandlerTest extends TestCase
                                Assert::assertSame($command->getTitle(), $article->title());
                                Assert::assertSame($command->getBody(), $article->body());
                                Assert::assertSame($command->getReviewerID(), $article->reviewerID());
-                               Assert::assertSame($command->getAcademicID(), $article->academicID());
+                               Assert::assertSame($command->getAcademicID(), $article->academicRegistrationNumber());
                            });
 
         $repository = $repositoryProphecy->reveal();
@@ -60,7 +60,7 @@ final class CreateArticleHandlerTest extends TestCase
                     $this->factoryFaker->instance(Title::class),
                     $this->factoryFaker->instance(Body::class),
                     $this->factoryFaker->instance(ReviewerID::class),
-                    $this->factoryFaker->instance(AcademicID::class)
+                    $this->factoryFaker->instance(AcademicRegistrationNumber::class)
                 ),
             ],
         ];

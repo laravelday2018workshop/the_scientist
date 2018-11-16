@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\UseCase\GetAcademic\GetAcademicCommand;
 use Acme\Academic\UseCase\GetAcademic\GetAcademicHandler;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Http\Requests\GetAcademicRequest;
 use App\Integration\Academic\Mapper\ViewAcademicMapper;
 
@@ -34,7 +34,7 @@ final class GetAcademicController extends Controller
     public function __invoke(GetAcademicRequest $request)
     {
         $id = $request->route()->parameter('id');
-        $command = new GetAcademicCommand(AcademicID::fromUUID($id));
+        $command = new GetAcademicCommand(AcademicRegistrationNumber::fromString($id));
         $academic = $this->handler->__invoke($command);
 
         $response = $this->viewAcademicMapper->fromAcademic($academic);

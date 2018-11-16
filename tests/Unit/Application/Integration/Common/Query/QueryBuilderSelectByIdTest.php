@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Integration\Common\Query;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Integration\Common\Query\QueryBuilderSelectById;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -20,8 +20,8 @@ class QueryBuilderSelectByIdTest extends TestCase
      */
     public function should_select()
     {
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $expectedResult = ['id' => 1];
 

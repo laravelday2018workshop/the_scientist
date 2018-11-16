@@ -50,7 +50,7 @@ class UpdateArticleTest extends TestCase
                 'title' => (string) $article->title(),
                 'body' => (string) $article->body(),
                 'reviewer_id' => (string) $article->reviewerID(),
-                'academic_id' => (string) $article->academicID(),
+                'academic_id' => (string) $article->academicRegistrationNumber(),
                 'created_at' => $article->creationDate()->format('Y-m-d H:i:s'),
             ]
         );

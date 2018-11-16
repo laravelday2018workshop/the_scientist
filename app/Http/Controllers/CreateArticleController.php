@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\UseCase\CreateArticle\CreateArticleCommand;
 use Acme\Article\UseCase\CreateArticle\CreateArticleHandler;
 use Acme\Article\ValueObject\Body;
@@ -36,7 +36,7 @@ final class CreateArticleController extends Controller
             new Title($request->get('title')),
             new Body($request->get('body')),
             ReviewerID::fromUUID($request->get('reviewer_id')),
-            AcademicID::fromUUID($request->get('academic_id'))
+            AcademicRegistrationNumber::fromString($request->get('academic_id'))
         );
         $article = ($this->handler)($command);
 

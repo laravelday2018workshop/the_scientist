@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Rules;
 
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Rules\AcademicIDRule;
 use Faker\Generator as Faker;
 use Tests\TestCase;
@@ -41,7 +42,7 @@ class AcademicIDRuleTest extends TestCase
         $faker = $this->factoryFaker->instance(Faker::class);
 
         return [
-            [$faker->word, $faker->uuid],
+            [$faker->word, (string) $this->factoryFaker->instance(AcademicRegistrationNumber::class)],
         ];
     }
 

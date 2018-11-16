@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Integration\Academic\Mapper;
 
 use Acme\Academic\Academic;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 
 final class DatabaseAcademicMapper implements AcademicMapper
 {
@@ -22,7 +22,7 @@ final class DatabaseAcademicMapper implements AcademicMapper
     public function fromArray(array $rawAcademic): Academic
     {
         return new Academic(
-            AcademicID::fromUUID($rawAcademic['id'])
+            AcademicRegistrationNumber::fromString($rawAcademic['id'])
         );
     }
 

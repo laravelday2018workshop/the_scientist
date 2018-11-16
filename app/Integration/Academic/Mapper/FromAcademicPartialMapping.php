@@ -11,7 +11,7 @@ final class FromAcademicPartialMapping
     public function __invoke(Academic $academic): array
     {
         return [
-            'id' => (string) $academic->id(),
+            'id' => (string) $academic->registrationNumber(),
         ];
     }
 }

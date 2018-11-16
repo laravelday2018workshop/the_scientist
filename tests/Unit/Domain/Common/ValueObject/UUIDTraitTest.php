@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 /**
  * @covers \Acme\Article\ValueObject\ArticleID
- * @covers \Acme\Academic\ValueObject\AcademicID
+ * @covers \Acme\Academic\ValueObject\AcademicRegistrationNumber
  * @covers \Acme\Reviewer\ValueObject\ReviewerID
  * @covers \Acme\Common\ValueObject\UUIDTrait
  */

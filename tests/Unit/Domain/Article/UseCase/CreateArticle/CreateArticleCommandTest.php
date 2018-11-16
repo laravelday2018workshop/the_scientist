@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Article\UseCase\CreateArticle;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\UseCase\CreateArticle\CreateArticleCommand;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
@@ -20,7 +20,7 @@ final class CreateArticleCommandTest extends TestCase
      * @test
      * @dataProvider argumentsDataProvider
      */
-    public function command_should_be_created(Title $title, Body $body, ReviewerID $reviewerID, AcademicID $academicID): void
+    public function command_should_be_created(Title $title, Body $body, ReviewerID $reviewerID, AcademicRegistrationNumber $academicID): void
     {
         $command = new CreateArticleCommand($title, $body, $reviewerID, $academicID);
 
@@ -37,7 +37,7 @@ final class CreateArticleCommandTest extends TestCase
                 $this->factoryFaker->instance(Title::class),
                 $this->factoryFaker->instance(Body::class),
                 $this->factoryFaker->instance(ReviewerID::class),
-                $this->factoryFaker->instance(AcademicID::class),
+                $this->factoryFaker->instance(AcademicRegistrationNumber::class),
             ],
         ];
     }
