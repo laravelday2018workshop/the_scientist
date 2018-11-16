@@ -11,22 +11,15 @@ use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
 use Acme\Academic\ValueObject\AcademicID;
+use Acme\Common\Query\Pagination;
 use App\Integration\Academic\Mapper\AcademicMapper;
-use Illuminate\Database\DatabaseManager;
+use App\Integration\Common\Query\CrudFacade;
 use Illuminate\Database\QueryException;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use stdClass;
 
 final class AcademicQueryBuilderRepository implements AcademicRepository
 {
-    private const TABLE_NAME = 'academics';
-
-    /**
-     * @var DatabaseManager
-     */
-    private $database;
-
     /**
      * @var AcademicMapper
      */
@@ -37,21 +30,24 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      */
     private $logger;
 
-    public function __construct(DatabaseManager $database, AcademicMapper $academicMapper, LoggerInterface $logger)
-    {
-        $this->database = $database;
+    /**
+     * @var CrudFacade
+     */
+    private $query;
+
+    public function __construct(CrudFacade $query,
+                                AcademicMapper $academicMapper,
+                                LoggerInterface $logger
+    ) {
         $this->academicMapper = $academicMapper;
         $this->logger = $logger;
+        $this->query = $query;
     }
 
     public function getById(AcademicID $academicID): Academic
     {
         try {
-            $rawAcademic =
-                $this->database->table(self::TABLE_NAME)
-                    ->select()
-                    ->where('id', '=', (string) $academicID)
-                    ->first();
+            $rawAcademic = $this->query->getById($academicID);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'academic_id' => (string) $academicID]);
             throw new ImpossibleToRetrieveAcademics($e);
@@ -62,27 +58,21 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
             throw new AcademicNotFound($academicID);
         }
 
-        return $this->academicMapper->fromArray((array) $rawAcademic);
+        return $this->academicMapper->fromArray($rawAcademic);
     }
 
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): AcademicCollection
     {
-        if ($take > AcademicRepository::MAX_SIZE) {
-            $take = AcademicRepository::MAX_SIZE;
-        }
-
         try {
-            $rawAcademics = $this->database->table(self::TABLE_NAME)->select()->skip($skip)->take($take)->get();
+            $pagination = $this->getPagination($skip, $take);
+
+            $rawAcademics = $this->query->getAll($pagination);
         } catch (QueryException $e) {
             $this->logger->warning('database failure', ['exception' => $e]);
             throw new ImpossibleToRetrieveAcademics($e);
         }
 
-        $academics = \array_map(function (stdClass $rawAcademic) {
-            return $this->academicMapper->fromArray((array) $rawAcademic);
-        }, $rawAcademics->toArray());
-
-        return new AcademicCollection(...$academics);
+        return $this->serializeList($rawAcademics);
     }
 
     public function nextID(): AcademicID
@@ -95,18 +85,12 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      */
     public function add(Academic $academic): void
     {
-        $rawAcademic = $this->academicMapper->fromAcademic($academic);
-
         try {
-            $insert = $this->database->table(self::TABLE_NAME)->insert($rawAcademic);
+            $rawAcademic = $this->academicMapper->fromAcademic($academic);
+            $this->query->save($rawAcademic);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'academic' => $rawAcademic]);
             throw new ImpossibleToSaveAcademic($e);
-        }
-
-        if (false === $insert) {
-            $this->logger->warning('impossible to add academic', ['academic' => $rawAcademic]);
-            throw new ImpossibleToSaveAcademic();
         }
     }
 
@@ -115,18 +99,49 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      */
     public function update(Academic $academic): void
     {
-        $rawAcademic = $this->academicMapper->fromAcademic($academic);
-
         try {
-            $update = $this->database->table(self::TABLE_NAME)->update($rawAcademic);
+            $rawAcademic = $this->academicMapper->fromAcademic($academic);
+            $this->query->update($academic->id(), $rawAcademic);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'academic' => $rawAcademic]);
             throw new ImpossibleToSaveAcademic($e);
         }
+    }
 
-        if (0 === $update) {
-            $this->logger->warning('impossible to update academic', ['academic' => $rawAcademic]);
-            throw new ImpossibleToSaveAcademic();
+    /**
+     * @param int $skip
+     * @param int $take
+     *
+     * @return Pagination
+     */
+    private function getPagination(int $skip, int $take): Pagination
+    {
+        if ($take > AcademicRepository::MAX_SIZE) {
+            $take = AcademicRepository::MAX_SIZE;
         }
+
+        return new Pagination($skip, $take);
+    }
+
+    private function serialize(array $academic): Academic
+    {
+        return $this->academicMapper->fromArray($academic);
+    }
+
+    /**
+     * @param $rawAcademics
+     *
+     * @return array
+     */
+    private function serializeList(array $rawAcademics): AcademicCollection
+    {
+        $list = \array_map(
+            function (array &$rawAcademic) {
+                return $this->serialize((array) $rawAcademic);
+            },
+            $rawAcademics
+        );
+
+        return new AcademicCollection(...$list);
     }
 }

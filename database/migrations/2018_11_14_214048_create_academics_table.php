@@ -13,10 +13,20 @@ class CreateAcademicsTable extends Migration
      */
     public function up()
     {
-        Schema::create('academics', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
-        });
+        Schema::create('academics',
+            function (Blueprint $table) {
+                $table->increments('id');
+
+                $table->string('registration_number', 18);
+                $table->string('first_name', 50);
+                $table->string('last_name', 50);
+                $table->date('birth_date');
+                $table->string('major', 100);
+                $table->dateTime('registered_at');
+
+                $table->index('registration_number');
+                $table->index(['first_name', 'last_name']);
+            });
     }
 
     /**
