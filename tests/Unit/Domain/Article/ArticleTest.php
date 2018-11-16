@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Article;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
@@ -26,7 +26,7 @@ final class ArticleTest extends TestCase
         ArticleID $articleID,
         Title $title,
         Body $body,
-        AcademicID $academicID,
+        AcademicRegistrationNumber $academicID,
         ReviewerID $reviewerID,
         ?DateTimeImmutable $publishDate,
         DateTimeImmutable $creationDate,
@@ -45,7 +45,7 @@ final class ArticleTest extends TestCase
         $this->assertSame($articleID, $article->id());
         $this->assertSame($title, $article->title());
         $this->assertSame($body, $article->body());
-        $this->assertSame($academicID, $article->academicID());
+        $this->assertSame($academicID, $article->academicRegistrationNumber());
         $this->assertSame($reviewerID, $article->reviewerID());
         $this->assertSame($publishDate, $article->publishDate());
         $this->assertSame($creationDate, $article->creationDate());
@@ -59,7 +59,7 @@ final class ArticleTest extends TestCase
                 $this->factoryFaker->instance(ArticleID::class),
                 $this->factoryFaker->instance(Title::class),
                 $this->factoryFaker->instance(Body::class),
-                $this->factoryFaker->instance(AcademicID::class),
+                $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                 $this->factoryFaker->instance(ReviewerID::class),
                 new DateTimeImmutable(),
                 new DateTimeImmutable(),
@@ -68,7 +68,7 @@ final class ArticleTest extends TestCase
                 $this->factoryFaker->instance(ArticleID::class),
                 $this->factoryFaker->instance(Title::class),
                 $this->factoryFaker->instance(Body::class),
-                $this->factoryFaker->instance(AcademicID::class),
+                $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                 $this->factoryFaker->instance(ReviewerID::class),
                 null,
                 new DateTimeImmutable(),
@@ -87,7 +87,7 @@ final class ArticleTest extends TestCase
         Title $newTitle,
         Body $body,
         Body $newBody,
-        AcademicID $academicID,
+        AcademicRegistrationNumber $academicID,
         ReviewerID $reviewerID,
         DateTimeImmutable $creationDate
     ): void {
@@ -103,7 +103,7 @@ final class ArticleTest extends TestCase
         $this->assertSame($articleID, $article->id());
         $this->assertSame($title, $article->title());
         $this->assertSame($body, $article->body());
-        $this->assertSame($academicID, $article->academicID());
+        $this->assertSame($academicID, $article->academicRegistrationNumber());
         $this->assertSame($reviewerID, $article->reviewerID());
         $this->assertNull($article->publishDate());
         $this->assertSame($creationDate, $article->creationDate());
@@ -125,7 +125,7 @@ final class ArticleTest extends TestCase
                 $this->factoryFaker->instance(Title::class),
                 $this->factoryFaker->instance(Body::class),
                 $this->factoryFaker->instance(Body::class),
-                $this->factoryFaker->instance(AcademicID::class),
+                $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                 $this->factoryFaker->instance(ReviewerID::class),
                 new DateTimeImmutable(),
             ],

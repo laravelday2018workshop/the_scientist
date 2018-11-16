@@ -36,7 +36,7 @@ class CreateArticleTest extends TestCase
         $response = $this->post('articles', [
             'title' => (string) $article->title(),
             'body' => (string) $article->body(),
-            'academic_id' => (string) $article->academicID(),
+            'academic_id' => (string) $article->academicRegistrationNumber(),
             'reviewer_id' => (string) $article->reviewerID(),
         ]);
         $articleCollection = $this->repository->list()->toArray();
@@ -48,7 +48,7 @@ class CreateArticleTest extends TestCase
                 'title' => (string) $storedArticle->title(),
                 'body' => (string) $storedArticle->body(),
                 'reviewer_id' => (string) $storedArticle->reviewerID(),
-                'academic_id' => (string) $storedArticle->academicID(),
+                'academic_id' => (string) $storedArticle->academicRegistrationNumber(),
                 'published_at' => null,
                 'created_at' => $storedArticle->creationDate()->format('Y-m-d H:i:s'),
                 'updated_at' => null,

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Integration\Academic\Mapper;
 
 use Acme\Academic\Academic;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Integration\Academic\Mapper\DatabaseAcademicMapper;
 use App\Integration\Academic\Mapper\FromAcademicPartialMapping;
 use Error;
-use Faker\Generator as Faker;
 use Tests\TestCase;
 
 /**
@@ -35,7 +35,7 @@ final class DatabaseAcademicMapperTest extends TestCase
     {
         $mapper = new DatabaseAcademicMapper(new FromAcademicPartialMapping());
         $academic = $mapper->fromArray($rawAcademic);
-        $this->assertSame($rawAcademic['id'], (string) $academic->id());
+        $this->assertSame($rawAcademic['id'], (string) $academic->registrationNumber());
     }
 
     /**
@@ -46,7 +46,7 @@ final class DatabaseAcademicMapperTest extends TestCase
     {
         $mapper = new DatabaseAcademicMapper(new FromAcademicPartialMapping());
         $academic = $mapper->fromArray($rawAcademic);
-        $this->assertSame($rawAcademic['id'], (string) $academic->id());
+        $this->assertSame($rawAcademic['id'], (string) $academic->registrationNumber());
     }
 
     public function academicDataProvider(): array
@@ -60,13 +60,10 @@ final class DatabaseAcademicMapperTest extends TestCase
 
     public function databaseRecordDataProvider(): array
     {
-        /** @var Faker $faker */
-        $faker = $this->factoryFaker->instance(Faker::class);
-
         return [
             [
                 [
-                    'id' => $faker->uuid,
+                    'id' => (string) $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                 ],
             ],
         ];
@@ -74,13 +71,10 @@ final class DatabaseAcademicMapperTest extends TestCase
 
     public function databaseRecordWithDatesDataProvider(): array
     {
-        /** @var Faker $faker */
-        $faker = $this->factoryFaker->instance(Faker::class);
-
         return [
             [
                 [
-                    'id' => $faker->uuid,
+                    'id' => (string) $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                 ],
             ],
         ];

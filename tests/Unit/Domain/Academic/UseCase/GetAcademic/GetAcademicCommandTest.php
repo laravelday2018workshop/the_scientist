@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Academic\UseCase\GetAcademic;
 
 use Acme\Academic\UseCase\GetAcademic\GetAcademicCommand;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Tests\TestCase;
 
 /**
@@ -17,7 +17,7 @@ class GetAcademicCommandTest extends TestCase
      * @test
      * @dataProvider argumentsDataProvider
      */
-    public function command_should_be_created(AcademicID $academicID)
+    public function command_should_be_created(AcademicRegistrationNumber $academicID)
     {
         $command = new GetAcademicCommand($academicID);
 
@@ -28,7 +28,7 @@ class GetAcademicCommandTest extends TestCase
     {
         return [
             [
-                $this->factoryFaker->instance(AcademicID::class),
+                $this->factoryFaker->instance(AcademicRegistrationNumber::class),
             ],
         ];
     }

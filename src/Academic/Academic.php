@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Acme\Academic;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 
 final class Academic
 {
     /**
-     * @var AcademicID
+     * @var AcademicRegistrationNumber
      */
-    private $academicID;
+    private $id;
 
     public function __construct(
-        AcademicID $academicID
+        AcademicRegistrationNumber $registrationNumber
     ) {
-        $this->academicID = $academicID;
+        $this->registrationNumber = $registrationNumber;
     }
 
-    public function id(): AcademicID
+    public function registrationNumber(): AcademicRegistrationNumber
     {
-        return $this->academicID;
+        return $this->registrationNumber;
     }
 }

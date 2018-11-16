@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Integration\Common\Query;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Common\Query\Delete;
 use Acme\Common\Query\Insert;
 use Acme\Common\Query\Pagination;
@@ -61,8 +61,8 @@ class CrudFacadeDefaultTest extends TestCase
      */
     public function should_getById()
     {
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $expectedResult = ['id' => 1];
 
@@ -120,8 +120,8 @@ class CrudFacadeDefaultTest extends TestCase
     {
         $data = ['id' => 1, 'name' => 'Pippo'];
 
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $this->update->__invoke($academicId, $data)
                      ->shouldBeCalledOnce()
@@ -137,8 +137,8 @@ class CrudFacadeDefaultTest extends TestCase
      */
     public function should_remove()
     {
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $this->delete->__invoke($academicId)
                      ->shouldBeCalledOnce()

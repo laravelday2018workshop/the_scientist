@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Rules;
 
-use Acme\Academic\ValueObject\AcademicID;
-use Acme\Common\ValueObject\Exception\InvalidID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Excpetion\InvalidAcademicRegistrationNumber;
 use Illuminate\Contracts\Validation\Rule;
 
 class AcademicIDRule implements Rule
@@ -18,10 +18,10 @@ class AcademicIDRule implements Rule
     public function passes($attribute, $value): bool
     {
         try {
-            AcademicID::fromUUID($value);
+            AcademicRegistrationNumber::fromString($value);
 
             return true;
-        } catch (InvalidID $e) {
+        } catch (InvalidAcademicRegistrationNumber $e) {
             $this->message = $e->getMessage();
 
             return false;

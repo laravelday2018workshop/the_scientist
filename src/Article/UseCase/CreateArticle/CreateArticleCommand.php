@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Acme\Article\UseCase\CreateArticle;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
 use Acme\Reviewer\ValueObject\ReviewerID;
@@ -27,11 +27,11 @@ final class CreateArticleCommand
     private $reviewerID;
 
     /**
-     * @var AcademicID
+     * @var AcademicRegistrationNumber
      */
     private $academicID;
 
-    public function __construct(Title $title, Body $body, ReviewerID $reviewerID, AcademicID $academicID)
+    public function __construct(Title $title, Body $body, ReviewerID $reviewerID, AcademicRegistrationNumber $academicID)
     {
         $this->title = $title;
         $this->body = $body;
@@ -54,7 +54,7 @@ final class CreateArticleCommand
         return $this->reviewerID;
     }
 
-    public function getAcademicID(): AcademicID
+    public function getAcademicID(): AcademicRegistrationNumber
     {
         return $this->academicID;
     }

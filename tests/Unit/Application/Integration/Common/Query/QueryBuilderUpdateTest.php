@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Integration\Common\Query;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Integration\Common\Query\QueryBuilderUpdate;
 use Illuminate\Database\Query\Builder;
 use Tests\TestCase;
@@ -21,8 +21,8 @@ class QueryBuilderUpdateTest extends TestCase
     {
         $data = [];
 
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $builder = $this->prophesize(Builder::class);
 

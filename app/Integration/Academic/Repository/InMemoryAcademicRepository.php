@@ -8,9 +8,8 @@ use Acme\Academic\Academic;
 use Acme\Academic\AcademicCollection;
 use Acme\Academic\Repository\AcademicRepository;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Illuminate\Support\Collection;
-use Ramsey\Uuid\Uuid;
 
 class InMemoryAcademicRepository implements AcademicRepository
 {
@@ -22,7 +21,7 @@ class InMemoryAcademicRepository implements AcademicRepository
         $this->academics = new Collection();
     }
 
-    public function getById(AcademicID $academicID): Academic
+    public function getById(AcademicRegistrationNumber $academicID): Academic
     {
         if (!$this->academics->has((string) $academicID)) {
             throw new AcademicNotFound($academicID);
@@ -42,18 +41,18 @@ class InMemoryAcademicRepository implements AcademicRepository
         return new AcademicCollection(...$academics);
     }
 
-    public function nextID(): AcademicID
+    public function nextID(): AcademicRegistrationNumber
     {
-        return AcademicID::fromUUID((string) Uuid::uuid4());
+        return AcademicRegistrationNumber::fromInteger(\random_int(1000000000, 9000000000));
     }
 
     public function add(Academic $academic): void
     {
-        $this->academics->put((string) $academic->id(), $academic);
+        $this->academics->put((string) $academic->registrationNumber(), $academic);
     }
 
     public function update(Academic $academic): void
     {
-        $this->academics->put((string) $academic->id(), $academic);
+        $this->academics->put((string) $academic->registrationNumber(), $academic);
     }
 }

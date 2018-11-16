@@ -9,7 +9,7 @@ use Acme\Academic\AcademicCollection;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Common\Exception\UnexpectedError;
 
 interface AcademicRepository
@@ -24,7 +24,7 @@ interface AcademicRepository
      * @throws AcademicNotFound
      * @throws ImpossibleToRetrieveAcademics
      */
-    public function getById(AcademicID $academicID): Academic;
+    public function getById(AcademicRegistrationNumber $academicID): Academic;
 
     /**
      * @throws ImpossibleToRetrieveAcademics
@@ -34,7 +34,7 @@ interface AcademicRepository
     /**
      * @throws UnexpectedError
      */
-    public function nextID(): AcademicID;
+    public function nextID(): AcademicRegistrationNumber;
 
     /**
      * @throws ImpossibleToSaveAcademic

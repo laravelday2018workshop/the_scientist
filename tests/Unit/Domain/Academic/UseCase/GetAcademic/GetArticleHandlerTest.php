@@ -9,7 +9,7 @@ use Acme\Academic\Repository\AcademicRepository;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\UseCase\GetAcademic\GetAcademicCommand;
 use Acme\Academic\UseCase\GetAcademic\GetAcademicHandler;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Prophecy\Argument;
 use Tests\TestCase;
 
@@ -26,7 +26,7 @@ final class GetArticleHandlerTest extends TestCase
     {
         $repositoryProphecy = $this->prophesize(AcademicRepository::class);
 
-        $repositoryProphecy->getById(Argument::type(AcademicID::class))
+        $repositoryProphecy->getById(Argument::type(AcademicRegistrationNumber::class))
                            ->shouldBeCalledOnce()
                            ->willReturn($expectedAcademic);
 
@@ -34,7 +34,7 @@ final class GetArticleHandlerTest extends TestCase
 
         $handler = new GetAcademicHandler($repository);
 
-        $command = new GetAcademicCommand($expectedAcademic->id());
+        $command = new GetAcademicCommand($expectedAcademic->registrationNumber());
 
         $academic = $handler($command);
 
@@ -48,8 +48,8 @@ final class GetArticleHandlerTest extends TestCase
     {
         $this->expectException(AcademicNotFound::class);
 
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $repository = $this->prophesize(AcademicRepository::class);
 

@@ -36,7 +36,7 @@ final class ViewArticleMapperTest extends TestCase
         $this->assertSame((string) $article->id(), $data['id']);
         $this->assertSame((string) $article->title(), $data['title']);
         $this->assertSame((string) $article->body(), $data['body']);
-        $this->assertSame((string) $article->academicID(), $data['academic_id']);
+        $this->assertSame((string) $article->academicRegistrationNumber(), $data['academic_id']);
         $this->assertSame((string) $article->reviewerID(), $data['reviewer_id']);
         $this->assertSame($article->publishDate()->format('Y-m-d H:i:s'), $data['published_at']);
         $this->assertSame($article->creationDate()->format('Y-m-d H:i:s'), $data['created_at']);
