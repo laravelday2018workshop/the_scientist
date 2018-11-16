@@ -33,7 +33,7 @@ final class ViewAcademicMapperTest extends TestCase
     {
         $mapper = new ViewAcademicMapper(new FromAcademicPartialMapping());
         $data = $mapper->fromAcademic($academic);
-        $this->assertSame((string) $academic->id(), $data['id']);
+        $this->assertSame((string) $academic->registrationNumber(), $data['id']);
     }
 
     public function academicDataProvider(): array

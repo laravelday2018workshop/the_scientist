@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Academic;
 
 use Acme\Academic\Academic;
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Tests\TestCase;
 
 /**
@@ -24,11 +24,11 @@ class AcademicTest extends TestCase
      */
     public function should_create_an_academic()
     {
-        /** @var AcademicID $academicId */
-        $academicId = $this->factoryFaker->instance(AcademicID::class);
+        /** @var AcademicRegistrationNumber $academicId */
+        $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $academic = new Academic($academicId);
 
-        $this->assertSame($academicId, $academic->id());
+        $this->assertSame($academicId, $academic->registrationNumber());
     }
 }

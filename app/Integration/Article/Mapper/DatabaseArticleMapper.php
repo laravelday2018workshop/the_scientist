@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Integration\Article\Mapper;
 
-use Acme\Academic\ValueObject\AcademicID;
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
@@ -30,7 +30,7 @@ final class DatabaseArticleMapper implements ArticleMapper
             ArticleID::fromUUID($rawArticle['id']),
             new Title($rawArticle['title']),
             new Body($rawArticle['body']),
-            AcademicID::fromUUID($rawArticle['academic_id']),
+            AcademicRegistrationNumber::fromString($rawArticle['academic_id']),
             ReviewerID::fromUUID($rawArticle['reviewer_id']),
             isset($rawArticle['published_at']) ? new DateTimeImmutable($rawArticle['published_at']) : null,
             new DateTimeImmutable($rawArticle['created_at']),

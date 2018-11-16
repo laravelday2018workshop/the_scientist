@@ -45,7 +45,7 @@ class GetArticleTest extends TestCase
                 'title' => (string) $article->title(),
                 'body' => (string) $article->body(),
                 'reviewer_id' => (string) $article->reviewerID(),
-                'academic_id' => (string) $article->academicID(),
+                'academic_id' => (string) $article->academicRegistrationNumber(),
                 'published_at' => $article->publishDate()->format('Y-m-d H:i:s'),
                 'created_at' => $article->creationDate()->format('Y-m-d H:i:s'),
                 'updated_at' => $article->lastUpdateDate()->format('Y-m-d H:i:s'),

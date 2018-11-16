@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Integration\Article\Mapper;
 
+use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
 use App\Integration\Article\Mapper\DatabaseArticleMapper;
 use App\Integration\Article\Mapper\FromArticlePartialMapping;
@@ -39,7 +40,7 @@ final class DatabaseArticleMapperTest extends TestCase
         $this->assertSame($rawArticle['id'], (string) $article->id());
         $this->assertSame($rawArticle['title'], (string) $article->title());
         $this->assertSame($rawArticle['body'], (string) $article->body());
-        $this->assertSame($rawArticle['academic_id'], (string) $article->academicID());
+        $this->assertSame($rawArticle['academic_id'], (string) $article->academicRegistrationNumber());
         $this->assertSame($rawArticle['reviewer_id'], (string) $article->reviewerID());
         $this->assertNull($article->publishDate());
         $this->assertSame($rawArticle['created_at'], $article->creationDate()->format('Y-m-d H:i:s'));
@@ -57,7 +58,7 @@ final class DatabaseArticleMapperTest extends TestCase
         $this->assertSame($rawArticle['id'], (string) $article->id());
         $this->assertSame($rawArticle['title'], (string) $article->title());
         $this->assertSame($rawArticle['body'], (string) $article->body());
-        $this->assertSame($rawArticle['academic_id'], (string) $article->academicID());
+        $this->assertSame($rawArticle['academic_id'], (string) $article->academicRegistrationNumber());
         $this->assertSame($rawArticle['reviewer_id'], (string) $article->reviewerID());
         $this->assertSame($rawArticle['published_at'], $article->publishDate()->format('Y-m-d H:i:s'));
         $this->assertSame($rawArticle['created_at'], $article->creationDate()->format('Y-m-d H:i:s'));
@@ -84,7 +85,7 @@ final class DatabaseArticleMapperTest extends TestCase
                     'id' => $faker->uuid,
                     'title' => $faker->sentence(3, 10),
                     'body' => $faker->sentence(3, 10),
-                    'academic_id' => $faker->uuid,
+                    'academic_id' => (string) $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                     'reviewer_id' => $faker->uuid,
                     'published_at' => null,
                     'created_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
@@ -105,7 +106,7 @@ final class DatabaseArticleMapperTest extends TestCase
                     'id' => $faker->uuid,
                     'title' => $faker->sentence(3, 10),
                     'body' => $faker->sentence(3, 10),
-                    'academic_id' => $faker->uuid,
+                    'academic_id' => (string) $this->factoryFaker->instance(AcademicRegistrationNumber::class),
                     'reviewer_id' => $faker->uuid,
                     'published_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
                     'created_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
