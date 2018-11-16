@@ -13,8 +13,9 @@ final class Academic
      */
     private $academicID;
 
-    public function __construct(AcademicID $academicID)
-    {
+    public function __construct(
+        AcademicID $academicID
+    ) {
         $this->academicID = $academicID;
     }
 
