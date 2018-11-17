@@ -20,6 +20,8 @@ use Psr\Log\LoggerInterface;
 
 final class AcademicQueryBuilderRepository implements AcademicRepository
 {
+    public const TABLE_NAME = 'academics';
+
     private const SEQUENCE_ACADEMIC_ID = 'sequence_academic_id';
     /**
      * @var AcademicMapper
