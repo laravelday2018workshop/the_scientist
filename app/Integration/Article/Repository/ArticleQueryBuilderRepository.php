@@ -20,7 +20,7 @@ use stdClass;
 
 final class ArticleQueryBuilderRepository implements ArticleRepository
 {
-    private const TABLE_NAME = 'articles';
+    public const TABLE_NAME = 'articles';
 
     /**
      * @var DatabaseManager
