@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Acme\Common\Query;
+namespace App\Integration\Common\Query;
 
 final class Pagination
 {

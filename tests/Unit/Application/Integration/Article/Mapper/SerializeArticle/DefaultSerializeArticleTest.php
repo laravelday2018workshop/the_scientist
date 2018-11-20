@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Integration\Article\Mapper;
 
 use Acme\Article\Article;
-use App\Integration\Article\Mapper\FromArticlePartialMapping;
-use App\Integration\Article\Mapper\ViewArticleMapper;
+use App\Integration\Article\Mapper\Serializer\DefaultSerializeArticle;
 use Error;
 use Tests\TestCase;
 
 /**
- * @covers \App\Integration\Article\Mapper\ViewArticleMapper
+ * @covers \App\Integration\Article\Mapper\Serializer\DefaultSerializeArticle
  */
-final class ViewArticleMapperTest extends TestCase
+final class DefaultSerializeArticleTest extends TestCase
 {
     /**
      * @test
@@ -21,8 +20,8 @@ final class ViewArticleMapperTest extends TestCase
     public function should_throw_an_exception_due_to_empty_implementation(): void
     {
         $this->expectException(Error::class);
-        $mapper = new ViewArticleMapper(new FromArticlePartialMapping());
-        $mapper->fromArray([]);
+        $mapper = new DefaultSerializeArticle();
+        $mapper->__invoke([]);
     }
 
     /**
@@ -31,8 +30,8 @@ final class ViewArticleMapperTest extends TestCase
      */
     public function should_return_an_array(Article $article): void
     {
-        $mapper = new ViewArticleMapper(new FromArticlePartialMapping());
-        $data = $mapper->fromArticle($article);
+        $mapper = new DefaultSerializeArticle();
+        $data = $mapper->__invoke($article);
         $this->assertSame((string) $article->id(), $data['id']);
         $this->assertSame((string) $article->title(), $data['title']);
         $this->assertSame((string) $article->body(), $data['body']);

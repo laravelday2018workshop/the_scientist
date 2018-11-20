@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Integration\Common\Query;
 
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use Acme\Common\Query\Delete;
-use Acme\Common\Query\Insert;
-use Acme\Common\Query\Pagination;
-use Acme\Common\Query\SelectAll;
-use Acme\Common\Query\SelectById;
-use Acme\Common\Query\Update;
 use App\Integration\Common\Query\CrudFacadeDefault;
+use App\Integration\Common\Query\Delete;
+use App\Integration\Common\Query\Insert;
+use App\Integration\Common\Query\Pagination;
+use App\Integration\Common\Query\SelectAll;
+use App\Integration\Common\Query\SelectById;
+use App\Integration\Common\Query\Update;
 use Tests\TestCase;
 
 /**
@@ -67,8 +67,8 @@ class CrudFacadeDefaultTest extends TestCase
         $expectedResult = ['id' => 1];
 
         $this->selectById->__invoke($academicId)
-                         ->shouldBeCalledOnce()
-                         ->willReturn($expectedResult);
+            ->shouldBeCalledOnce()
+            ->willReturn($expectedResult);
 
         $crud = $this->makeCrudFacade();
 
@@ -87,8 +87,8 @@ class CrudFacadeDefaultTest extends TestCase
         $expectedResult = [['id' => 1], ['id' => 1]];
 
         $this->selectAll->__invoke($pagination)
-                        ->shouldBeCalledOnce()
-                        ->willReturn($expectedResult);
+            ->shouldBeCalledOnce()
+            ->willReturn($expectedResult);
 
         $crud = $this->makeCrudFacade();
 
@@ -105,8 +105,8 @@ class CrudFacadeDefaultTest extends TestCase
         $data = ['id' => 1, 'name' => 'Pippo'];
 
         $this->insert->__invoke($data)
-                     ->shouldBeCalledOnce()
-                     ->hasReturnVoid();
+            ->shouldBeCalledOnce()
+            ->hasReturnVoid();
 
         $crud = $this->makeCrudFacade();
 
@@ -124,8 +124,8 @@ class CrudFacadeDefaultTest extends TestCase
         $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $this->update->__invoke($academicId, $data)
-                     ->shouldBeCalledOnce()
-                     ->hasReturnVoid();
+            ->shouldBeCalledOnce()
+            ->hasReturnVoid();
 
         $crud = $this->makeCrudFacade();
 
@@ -141,8 +141,8 @@ class CrudFacadeDefaultTest extends TestCase
         $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
 
         $this->delete->__invoke($academicId)
-                     ->shouldBeCalledOnce()
-                     ->hasReturnVoid();
+            ->shouldBeCalledOnce()
+            ->hasReturnVoid();
 
         $crud = $this->makeCrudFacade();
 

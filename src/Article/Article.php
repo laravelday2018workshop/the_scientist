@@ -34,7 +34,7 @@ final class Article
     private $academicRegistrationNumber;
 
     /**
-     * @var ReviewerID
+     * @var ReviewerID|null
      */
     private $reviewerID;
 
@@ -58,7 +58,7 @@ final class Article
         Title $title,
         Body $body,
         AcademicRegistrationNumber $academicID,
-        ReviewerID $reviewerID,
+        ?ReviewerID $reviewerID,
         ?DateTimeImmutable $publishDate,
         DateTimeImmutable $creationDate,
         ?DateTimeImmutable $lastUpdateDate
@@ -78,10 +78,9 @@ final class Article
         Title $title,
         Body $body,
         AcademicRegistrationNumber $academicID,
-        ReviewerID $reviewerID,
-        DateTimeImmutable $creationDate)
-    {
-        return new self($articleID, $title, $body, $academicID, $reviewerID, null, $creationDate, null);
+        DateTimeImmutable $creationDate
+    ): self {
+        return new self($articleID, $title, $body, $academicID, null, null, $creationDate, null);
     }
 
     public function id(): ArticleID
@@ -104,7 +103,7 @@ final class Article
         return $this->academicRegistrationNumber;
     }
 
-    public function reviewerID(): ReviewerID
+    public function reviewerID(): ?ReviewerID
     {
         return $this->reviewerID;
     }

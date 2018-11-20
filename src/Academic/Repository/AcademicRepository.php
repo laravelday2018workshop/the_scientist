@@ -24,7 +24,7 @@ interface AcademicRepository
      * @throws AcademicNotFound
      * @throws ImpossibleToRetrieveAcademics
      */
-    public function getById(AcademicRegistrationNumber $academicID): Academic;
+    public function getById(AcademicRegistrationNumber $academicRegistrationNumber): Academic;
 
     /**
      * @throws ImpossibleToRetrieveAcademics
@@ -45,4 +45,6 @@ interface AcademicRepository
      * @throws ImpossibleToSaveAcademic
      */
     public function update(Academic $academic): void;
+
+    public function nextArticleID();
 }

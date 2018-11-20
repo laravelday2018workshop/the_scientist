@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\CreateArticleController;
 use App\Http\Controllers\GetAcademicController;
 use App\Http\Controllers\GetArticleController;
 use App\Http\Controllers\ListArticlesController;
 use App\Http\Controllers\UpdateArticleController;
+use App\Http\Controllers\WriteArticleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,8 +16,8 @@ Route::get('/', function () {
 // Articles
 Route::get('/articles/', ListArticlesController::class);
 Route::get('/articles/{id}', GetArticleController::class);
-Route::post('/articles/', CreateArticleController::class);
 Route::patch('/articles/{id}', UpdateArticleController::class);
 
 // Academics
+Route::post('/academics/{id}/articles', WriteArticleController::class);
 Route::get('/academics/{id}', GetAcademicController::class);

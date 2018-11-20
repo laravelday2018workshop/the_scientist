@@ -10,7 +10,6 @@ use Acme\Article\Repository\ArticleRepository;
 use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\ValueObject\ArticleID;
 use Illuminate\Support\Collection;
-use Ramsey\Uuid\Uuid;
 
 class InMemoryArticleRepository implements ArticleRepository
 {
@@ -39,11 +38,6 @@ class InMemoryArticleRepository implements ArticleRepository
         $articles = $this->articles->splice($skip)->take($take)->values();
 
         return new ArticleCollection(...$articles);
-    }
-
-    public function nextID(): ArticleID
-    {
-        return ArticleID::fromUUID((string) Uuid::uuid4());
     }
 
     public function add(Article $article): void

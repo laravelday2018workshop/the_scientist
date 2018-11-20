@@ -9,7 +9,7 @@ use Acme\Article\UseCase\GetArticle\GetArticleCommand;
 use Acme\Article\UseCase\GetArticle\GetArticleHandler;
 use Acme\Article\ValueObject\ArticleID;
 use App\Http\Requests\GetArticleRequest;
-use App\Integration\Article\Mapper\ViewArticleMapper;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 
 final class GetArticleController extends Controller
 {
@@ -18,14 +18,14 @@ final class GetArticleController extends Controller
      */
     private $handler;
     /**
-     * @var ViewArticleMapper
+     * @var SerializeArticle
      */
-    private $viewArticleMapper;
+    private $fromArticleMapper;
 
-    public function __construct(GetArticleHandler $handler, ViewArticleMapper $viewArticleMapper)
+    public function __construct(GetArticleHandler $handler, SerializeArticle $fromArticleMapper)
     {
         $this->handler = $handler;
-        $this->viewArticleMapper = $viewArticleMapper;
+        $this->fromArticleMapper = $fromArticleMapper;
     }
 
     /**
@@ -35,9 +35,9 @@ final class GetArticleController extends Controller
     {
         $id = $request->route()->parameter('id');
         $command = new GetArticleCommand(ArticleID::fromUUID($id));
-        $article = $this->handler->__invoke($command);
+        $article = ($this->handler)($command);
 
-        $response = $this->viewArticleMapper->fromArticle($article);
+        $response = ($this->fromArticleMapper)($article);
 
         return response()->json($response);
     }

@@ -9,7 +9,7 @@ use Acme\Academic\UseCase\GetAcademic\GetAcademicCommand;
 use Acme\Academic\UseCase\GetAcademic\GetAcademicHandler;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use App\Http\Requests\GetAcademicRequest;
-use App\Integration\Academic\Mapper\ViewAcademicMapper;
+use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 
 final class GetAcademicController extends Controller
 {
@@ -18,14 +18,14 @@ final class GetAcademicController extends Controller
      */
     private $handler;
     /**
-     * @var ViewAcademicMapper
+     * @var SerializeAcademic
      */
-    private $viewAcademicMapper;
+    private $serializeAcademic;
 
-    public function __construct(GetAcademicHandler $handler, ViewAcademicMapper $viewAcademicMapper)
+    public function __construct(GetAcademicHandler $handler, SerializeAcademic $serializeAcademic)
     {
         $this->handler = $handler;
-        $this->viewAcademicMapper = $viewAcademicMapper;
+        $this->serializeAcademic = $serializeAcademic;
     }
 
     /**
@@ -35,9 +35,8 @@ final class GetAcademicController extends Controller
     {
         $id = $request->route()->parameter('id');
         $command = new GetAcademicCommand(AcademicRegistrationNumber::fromString($id));
-        $academic = $this->handler->__invoke($command);
-
-        $response = $this->viewAcademicMapper->fromAcademic($academic);
+        $academic = ($this->handler)($command);
+        $response = ($this->serializeAcademic)($academic);
 
         return response()->json($response);
     }

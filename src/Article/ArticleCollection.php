@@ -27,4 +27,12 @@ final class ArticleCollection extends IteratorIterator
     {
         return $this->articles;
     }
+
+    public function withArticle(Article $article): self
+    {
+        $articles = $this->articles;
+        $articles[] = $article;
+
+        return new self(...$articles);
+    }
 }

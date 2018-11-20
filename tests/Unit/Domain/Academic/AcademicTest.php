@@ -12,6 +12,7 @@ namespace Tests\Unit\Domain\Academic;
 
 use Acme\Academic\Academic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
+use Acme\Article\ArticleCollection;
 use Tests\TestCase;
 
 /**
@@ -26,9 +27,12 @@ class AcademicTest extends TestCase
     {
         /** @var AcademicRegistrationNumber $academicId */
         $academicId = $this->factoryFaker->instance(AcademicRegistrationNumber::class);
+        /** @var ArticleCollection $articles */
+        $articles = $this->factoryFaker->instance(ArticleCollection::class);
 
-        $academic = new Academic($academicId);
+        $academic = new Academic($academicId, $articles);
 
         $this->assertSame($academicId, $academic->registrationNumber());
+        $this->assertSame($articles, $academic->articles());
     }
 }

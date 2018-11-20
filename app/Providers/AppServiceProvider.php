@@ -6,46 +6,42 @@ namespace App\Providers;
 
 use Acme\Academic\Repository\AcademicRepository;
 use Acme\Article\Repository\ArticleRepository;
-use App\Integration\Academic\Mapper\AcademicMapper;
-use App\Integration\Academic\Mapper\DatabaseAcademicMapper;
+use App\Integration\Academic\Mapper\FromArray\DefaultHydrateAcademic;
+use App\Integration\Academic\Mapper\FromArray\HydrateAcademic;
+use App\Integration\Academic\Mapper\Serializer\DefaultSerializeAcademic;
+use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 use App\Integration\Academic\Repository\AcademicQueryBuilderRepository;
-use App\Integration\Article\Mapper\ArticleMapper;
-use App\Integration\Article\Mapper\DatabaseArticleMapper;
+use App\Integration\Article\Mapper\Hydrator\DefaultHydrateArticle;
+use App\Integration\Article\Mapper\Hydrator\HydrateArticle;
+use App\Integration\Article\Mapper\Serializer\DefaultSerializeArticle;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 use App\Integration\Article\Repository\ArticleQueryBuilderRepository;
 use App\Integration\Common\Query\CrudFacade;
 use App\Integration\Common\Query\CrudFacadeDefaultBuilder;
+use Illuminate\Log\Logger;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->registerArticleRepository();
-        $this->registerAcademicRepository();
-    }
+        $this->app->bind(AcademicRepository::class, function (): AcademicQueryBuilderRepository {
+            return new AcademicQueryBuilderRepository(
+                $this->app->get('db'),
+                new DefaultSerializeAcademic(new DefaultSerializeArticle()),
+                new DefaultHydrateAcademic(new DefaultHydrateArticle()),
+                $this->app->get(Logger::class)
+            );
+        });
 
-    private function registerArticleRepository(): void
-    {
         $this->app->bind(ArticleRepository::class, ArticleQueryBuilderRepository::class);
+        $this->app->when(ArticleRepository::class)->needs(CrudFacade::class)->give(function () {
+            return $this->app->get(CrudFacadeDefaultBuilder::class)->build(ArticleQueryBuilderRepository::TABLE_NAME);
+        });
 
-        $this->app->when(ArticleRepository::class)
-                  ->needs(ArticleMapper::class)
-                  ->give(DatabaseArticleMapper::class);
-    }
-
-    private function registerAcademicRepository(): void
-    {
-        $this->app->bind(AcademicRepository::class, AcademicQueryBuilderRepository::class);
-
-        $this->app->when(AcademicRepository::class)
-                  ->needs(AcademicMapper::class)
-                  ->give(DatabaseAcademicMapper::class);
-
-        $this->app->when(AcademicRepository::class)
-                  ->needs(CrudFacade::class)
-                  ->give(function () {
-                      return $this->app->get(CrudFacadeDefaultBuilder::class)
-                                       ->build(AcademicQueryBuilderRepository::TABLE_NAME);
-                  });
+        $this->app->bind(SerializeAcademic::class, DefaultSerializeAcademic::class);
+        $this->app->bind(HydrateAcademic::class, DefaultHydrateAcademic::class);
+        $this->app->bind(SerializeArticle::class, DefaultSerializeArticle::class);
+        $this->app->bind(HydrateArticle::class, DefaultHydrateArticle::class);
     }
 }
