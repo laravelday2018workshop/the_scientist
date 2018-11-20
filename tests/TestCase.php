@@ -7,6 +7,7 @@ namespace Tests;
 use Acme\Academic\Academic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
+use Acme\Article\ArticleCollection;
 use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
@@ -55,6 +56,10 @@ abstract class TestCase extends BaseTestCase
             );
         });
 
+        $factoryMuffin->define(ArticleCollection::class)->setMaker(function () use ($factoryMuffin): ArticleCollection {
+            return new ArticleCollection(...\array_fill(0, 5, $factoryMuffin->instance(Article::class)));
+        });
+
         $factoryMuffin->define(ArticleID::class)->setMaker(function () use ($faker): ArticleID {
             return ArticleID::fromUUID($faker->uuid);
         });
@@ -68,7 +73,10 @@ abstract class TestCase extends BaseTestCase
         });
 
         $factoryMuffin->define(Academic::class)->setMaker(function () use ($factoryMuffin): Academic {
-            return new Academic($factoryMuffin->instance(AcademicRegistrationNumber::class));
+            return new Academic(
+                $factoryMuffin->instance(AcademicRegistrationNumber::class),
+                new ArticleCollection()
+            );
         });
 
         $factoryMuffin->define(AcademicRegistrationNumber::class)->setMaker(function () use ($faker): AcademicRegistrationNumber {

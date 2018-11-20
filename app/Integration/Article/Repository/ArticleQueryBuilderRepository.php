@@ -11,11 +11,11 @@ use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
 use Acme\Article\Repository\Exception\ImpossibleToSaveArticle;
 use Acme\Article\ValueObject\ArticleID;
-use App\Integration\Article\Mapper\ArticleMapper;
+use App\Integration\Article\Mapper\Hydrator\HydrateArticle;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 use stdClass;
 
 final class ArticleQueryBuilderRepository implements ArticleRepository
@@ -28,20 +28,30 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
     private $database;
 
     /**
-     * @var ArticleMapper
-     */
-    private $articleMapper;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public function __construct(DatabaseManager $database, ArticleMapper $articleMapper, LoggerInterface $logger)
-    {
+    /**
+     * @var SerializeArticle
+     */
+    private $fromArticleMapper;
+
+    /**
+     * @var HydrateArticle
+     */
+    private $fromArrayMapper;
+
+    public function __construct(
+        DatabaseManager $database,
+        SerializeArticle $fromArticleMapper,
+        HydrateArticle $fromArrayMapper,
+        LoggerInterface $logger
+    ) {
         $this->database = $database;
-        $this->articleMapper = $articleMapper;
         $this->logger = $logger;
+        $this->fromArticleMapper = $fromArticleMapper;
+        $this->fromArrayMapper = $fromArrayMapper;
     }
 
     public function getById(ArticleID $articleID): Article
@@ -62,7 +72,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
             throw new ArticleNotFound($articleID);
         }
 
-        return $this->articleMapper->fromArray((array) $rawArticle);
+        return ($this->fromArrayMapper)((array) $rawArticle);
     }
 
     public function list(int $skip = self::DEFAULT_SKIP, int $take = self::DEFAULT_TAKE): ArticleCollection
@@ -79,15 +89,10 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
         }
 
         $articles = \array_map(function (stdClass $rawArticle) {
-            return $this->articleMapper->fromArray((array) $rawArticle);
+            return ($this->fromArrayMapper)((array) $rawArticle);
         }, $rawArticles->toArray());
 
         return new ArticleCollection(...$articles);
-    }
-
-    public function nextID(): ArticleID
-    {
-        return ArticleID::fromUUID((string) Uuid::uuid4());
     }
 
     /**
@@ -95,7 +100,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
      */
     public function add(Article $article): void
     {
-        $rawArticle = $this->articleMapper->fromArticle($article);
+        $rawArticle = ($this->fromArticleMapper)($article);
 
         try {
             $insert = $this->database->table(self::TABLE_NAME)->insert($rawArticle);
@@ -115,7 +120,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
      */
     public function update(Article $article): void
     {
-        $rawArticle = $this->articleMapper->fromArticle($article);
+        $rawArticle = ($this->fromArticleMapper)($article);
 
         try {
             $update = $this->database->table(self::TABLE_NAME)->update($rawArticle);

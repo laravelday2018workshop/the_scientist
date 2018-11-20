@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Integration\Common\Query;
 
-use Acme\Common\Query\Insert;
 use Illuminate\Database\Query\Builder;
 
 final class QueryBuilderInsert implements Insert

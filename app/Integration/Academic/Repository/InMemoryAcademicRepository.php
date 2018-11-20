@@ -9,7 +9,9 @@ use Acme\Academic\AcademicCollection;
 use Acme\Academic\Repository\AcademicRepository;
 use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
+use Acme\Article\ValueObject\ArticleID;
 use Illuminate\Support\Collection;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryAcademicRepository implements AcademicRepository
 {
@@ -54,5 +56,10 @@ class InMemoryAcademicRepository implements AcademicRepository
     public function update(Academic $academic): void
     {
         $this->academics->put((string) $academic->registrationNumber(), $academic);
+    }
+
+    public function nextArticleID(): ArticleID
+    {
+        return ArticleID::fromUUID((string) Uuid::uuid4());
     }
 }

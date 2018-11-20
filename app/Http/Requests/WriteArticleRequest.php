@@ -7,12 +7,11 @@ namespace App\Http\Requests;
 use App\Rules\AcademicIDRule;
 use App\Rules\ArticleBodyRule;
 use App\Rules\ArticleTitleRule;
-use App\Rules\ReviewerIDRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreateArticleRequest extends FormRequest
+final class WriteArticleRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -24,9 +23,13 @@ class CreateArticleRequest extends FormRequest
         return [
             'title' => ['required', 'string', new ArticleTitleRule()],
             'body' => ['required', 'string', new ArticleBodyRule()],
-            'reviewer_id' => ['required', 'string', new ReviewerIDRule()],
-            'academic_id' => ['required', 'string', new AcademicIDRule()],
+            'id' => ['required', 'string', new AcademicIDRule()],
         ];
+    }
+
+    protected function validationData(): array
+    {
+        return \array_merge($this->route()->parameters(), $this->all());
     }
 
     /**

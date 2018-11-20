@@ -8,7 +8,7 @@ use Acme\Article\Article;
 use Acme\Article\UseCase\ListArticles\ListArticlesCommand;
 use Acme\Article\UseCase\ListArticles\ListArticlesHandler;
 use App\Http\Requests\ListArticlesRequest;
-use App\Integration\Article\Mapper\ViewArticleMapper;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 
 final class ListArticlesController extends Controller
 {
@@ -17,14 +17,14 @@ final class ListArticlesController extends Controller
      */
     private $handler;
     /**
-     * @var ViewArticleMapper
+     * @var SerializeArticle
      */
-    private $viewArticleMapper;
+    private $fromArticleMapper;
 
-    public function __construct(ListArticlesHandler $handler, ViewArticleMapper $viewArticleMapper)
+    public function __construct(ListArticlesHandler $handler, SerializeArticle $fromArticleMapper)
     {
         $this->handler = $handler;
-        $this->viewArticleMapper = $viewArticleMapper;
+        $this->fromArticleMapper = $fromArticleMapper;
     }
 
     public function __invoke(ListArticlesRequest $request)
@@ -35,7 +35,7 @@ final class ListArticlesController extends Controller
         ));
 
         $articles = \array_map(function (Article $article) {
-            return $this->viewArticleMapper->fromArticle($article);
+            return ($this->fromArticleMapper)($article);
         }, $articleCollection->toArray());
 
         return response()->json($articles);

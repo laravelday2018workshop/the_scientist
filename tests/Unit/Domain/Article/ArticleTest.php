@@ -88,7 +88,6 @@ final class ArticleTest extends TestCase
         Body $body,
         Body $newBody,
         AcademicRegistrationNumber $academicID,
-        ReviewerID $reviewerID,
         DateTimeImmutable $creationDate
     ): void {
         $article = Article::create(
@@ -96,7 +95,6 @@ final class ArticleTest extends TestCase
             $title,
             $body,
             $academicID,
-            $reviewerID,
             $creationDate
         );
 
@@ -104,7 +102,7 @@ final class ArticleTest extends TestCase
         $this->assertSame($title, $article->title());
         $this->assertSame($body, $article->body());
         $this->assertSame($academicID, $article->academicRegistrationNumber());
-        $this->assertSame($reviewerID, $article->reviewerID());
+        $this->assertNull($article->reviewerID());
         $this->assertNull($article->publishDate());
         $this->assertSame($creationDate, $article->creationDate());
         $this->assertNull($article->lastUpdateDate());
@@ -126,7 +124,6 @@ final class ArticleTest extends TestCase
                 $this->factoryFaker->instance(Body::class),
                 $this->factoryFaker->instance(Body::class),
                 $this->factoryFaker->instance(AcademicRegistrationNumber::class),
-                $this->factoryFaker->instance(ReviewerID::class),
                 new DateTimeImmutable(),
             ],
         ];

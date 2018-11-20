@@ -10,7 +10,7 @@ use Acme\Article\ValueObject\ArticleID;
 use Acme\Article\ValueObject\Body;
 use Acme\Article\ValueObject\Title;
 use App\Http\Requests\UpdateArticleRequest;
-use App\Integration\Article\Mapper\ViewArticleMapper;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 
 final class UpdateArticleController extends Controller
 {
@@ -19,14 +19,14 @@ final class UpdateArticleController extends Controller
      */
     private $handler;
     /**
-     * @var ViewArticleMapper
+     * @var SerializeArticle
      */
-    private $viewArticleMapper;
+    private $fromArticleMapper;
 
-    public function __construct(UpdateArticleHandler $handler, ViewArticleMapper $viewArticleMapper)
+    public function __construct(UpdateArticleHandler $handler, SerializeArticle $fromArticleMapper)
     {
         $this->handler = $handler;
-        $this->viewArticleMapper = $viewArticleMapper;
+        $this->fromArticleMapper = $fromArticleMapper;
     }
 
     public function __invoke(UpdateArticleRequest $request)
@@ -38,6 +38,6 @@ final class UpdateArticleController extends Controller
         );
         $article = ($this->handler)($command);
 
-        return response()->json($this->viewArticleMapper->fromArticle($article));
+        return response()->json(($this->fromArticleMapper)($article));
     }
 }

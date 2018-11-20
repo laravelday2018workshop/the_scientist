@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Integration\Common\Query;
 
-use Acme\Common\Query\Pagination;
-use Acme\Common\Query\SelectAll;
 use Illuminate\Database\Query\Builder;
 
 final class QueryBuilderSelectAll implements SelectAll

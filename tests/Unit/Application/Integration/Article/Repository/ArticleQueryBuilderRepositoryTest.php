@@ -11,7 +11,8 @@ use Acme\Article\Repository\Exception\ArticleNotFound;
 use Acme\Article\Repository\Exception\ImpossibleToRetrieveArticles;
 use Acme\Article\Repository\Exception\ImpossibleToSaveArticle;
 use Acme\Article\ValueObject\ArticleID;
-use App\Integration\Article\Mapper\ArticleMapper;
+use App\Integration\Article\Mapper\Hydrator\HydrateArticle;
+use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 use App\Integration\Article\Repository\ArticleQueryBuilderRepository;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -38,13 +39,18 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('first')->with()->once()->andReturn($rawArticle);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArray((array) $rawArticle)->shouldBeCalledOnce()->willReturn($article);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArrayMapperProphecy = $this->prophesize(HydrateArticle::class);
+        $fromArrayMapperProphecy->__invoke((array) $rawArticle)->shouldBeCalledOnce()->willReturn($article);
+        $fromArticleMapper = $fromArrayMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $this->prophesize(SerializeArticle::class)->reveal(),
+            $fromArticleMapper,
+            $logger
+        );
         $retrievedArticle = $repository->getById($articleID);
         $this->assertSame($article, $retrievedArticle);
     }
@@ -66,13 +72,16 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('articles')->andThrow($exception);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapper = $articleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->error('database failure', ['exception' => $exception, 'article_id' => (string) $articleID]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $this->prophesize(SerializeArticle::class)->reveal(),
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->getById($articleID);
     }
 
@@ -96,13 +105,16 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('first')->with()->once()->andReturn(null);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapper = $articleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->warning('article not found', ['article_id' => (string) $articleID]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $this->prophesize(SerializeArticle::class)->reveal(),
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->getById($articleID);
     }
 
@@ -127,15 +139,20 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         $db = $this->app->get('db');
 
         $rawArticlesArray = $rawArticlesColection->toArray();
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
+        $fromArticleMapperProphecy = $this->prophesize(HydrateArticle::class);
         foreach ($collection->toArray() as $index => $article) {
-            $articleMapperProphecy->fromArray((array) $rawArticlesArray[$index])->shouldBeCalledOnce()->willReturn($article);
+            $fromArticleMapperProphecy->__invoke((array) $rawArticlesArray[$index])->shouldBeCalledOnce()->willReturn($article);
         }
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $this->prophesize(SerializeArticle::class)->reveal(),
+            $fromArticleMapper,
+            $logger
+        );
         $retrievedCollection = $repository->list($skip, $take);
         $this->assertSame($collection->toArray(), $retrievedCollection->toArray());
     }
@@ -152,7 +169,9 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         return [
             [
                 $rawArticles = new Collection([$stdOne]),
-                $collection = new ArticleCollection($this->factoryFaker->instance(Article::class)),
+                $collection = new ArticleCollection(
+                    $this->factoryFaker->instance(Article::class)
+                ),
                 $skip = 0,
                 $take = 10,
                 $expectedTake = 10,
@@ -180,12 +199,16 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('articles')->once()->andThrow($exception);
         $db = $this->app->get('db');
 
-        $articleMapper = $this->prophesize(ArticleMapper::class)->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->warning('database failure', ['exception' => $exception]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $this->prophesize(SerializeArticle::class)->reveal(),
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->list($skip, $take);
     }
 
@@ -199,20 +222,6 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
 
     /**
      * @test
-     * @dataProvider listConnectionErrorDataProvider
-     */
-    public function should_generate_next_uuid(): void
-    {
-        $db = $this->app->get('db');
-        $articleMapper = $this->prophesize(ArticleMapper::class)->reveal();
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
-        $this->assertInstanceOf(ArticleID::class, $repository->nextID());
-    }
-
-    /**
-     * @test
      * @dataProvider addDataProvider
      */
     public function should_store_an_article_in_the_database(Article $article, array $rawArticle): void
@@ -221,13 +230,18 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('insert')->with($rawArticle)->once()->andReturn(1);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn($rawArticle);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn($rawArticle);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->add($article);
     }
 
@@ -248,14 +262,19 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('articles')->once()->andThrow($exception);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn([]);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn([]);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->error('database failure', ['exception' => $exception, 'article' => $rawArticle]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->add($article);
     }
 
@@ -277,14 +296,19 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('insert')->with($rawArticle)->once()->andReturn(false);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn($rawArticle);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn($rawArticle);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->warning('impossible to add article', ['article' => $rawArticle]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->add($article);
     }
 
@@ -298,13 +322,18 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('update')->with($rawArticle)->once()->andReturn(1);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn($rawArticle);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn($rawArticle);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->update($article);
     }
 
@@ -318,14 +347,19 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('articles')->once()->andThrow($exception);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn([]);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn([]);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->error('database failure', ['exception' => $exception, 'article' => $rawArticle]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->update($article);
     }
 
@@ -340,14 +374,19 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('update')->with($rawArticle)->once()->andReturn(0);
         $db = $this->app->get('db');
 
-        $articleMapperProphecy = $this->prophesize(ArticleMapper::class);
-        $articleMapperProphecy->fromArticle($article)->shouldBeCalledOnce()->willReturn($rawArticle);
-        $articleMapper = $articleMapperProphecy->reveal();
+        $fromArticleMapperProphecy = $this->prophesize(SerializeArticle::class);
+        $fromArticleMapperProphecy->__invoke($article)->shouldBeCalledOnce()->willReturn($rawArticle);
+        $fromArticleMapper = $fromArticleMapperProphecy->reveal();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->warning('impossible to add article', ['article' => $rawArticle]);
         $logger = $loggerProphecy->reveal();
 
-        $repository = new ArticleQueryBuilderRepository($db, $articleMapper, $logger);
+        $repository = new ArticleQueryBuilderRepository(
+            $db,
+            $fromArticleMapper,
+            $this->prophesize(HydrateArticle::class)->reveal(),
+            $logger
+        );
         $repository->update($article);
     }
 }

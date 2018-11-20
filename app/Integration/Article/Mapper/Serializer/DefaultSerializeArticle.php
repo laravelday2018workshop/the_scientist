@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Integration\Article\Mapper;
+namespace App\Integration\Article\Mapper\Serializer;
 
 use Acme\Article\Article;
 
-final class FromArticlePartialMapping
+final class DefaultSerializeArticle implements SerializeArticle
 {
     public function __invoke(Article $article): array
     {

@@ -11,16 +11,16 @@ use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use Acme\Common\Query\Pagination;
-use App\Integration\Academic\Mapper\AcademicMapper;
+use App\Integration\Academic\Mapper\FromArray\HydrateAcademic;
+use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 use App\Integration\Academic\Repository\AcademicQueryBuilderRepository;
-use App\Integration\Common\Query\CrudFacade;
 use Exception;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
+use stdClass;
 use Tests\TestCase;
 
 /**
@@ -32,31 +32,39 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      * @test
      * @dataProvider getByIdFoundDataProvider
      */
-    public function should_find_an_academic_in_the_database(array $rawAcademic, Academic $academic): void
+    public function should_find_an_academic_in_the_database(array $rawAcademic, array $rawArticles, Academic $academic): void
     {
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->getById($academic->registrationNumber())
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademic);
+        $collectionProphecy = $this->prophesize(Collection::class);
+        $collectionProphecy->toArray()->willReturn($rawArticles);
+        $collection = $collectionProphecy->reveal();
 
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromArray($rawAcademic)
-            ->shouldBeCalledOnce()
-            ->willReturn($academic);
+        $expectedAcademic = $rawAcademic;
+        $expectedAcademic['articles'] = \array_map(function (stdClass $article) {
+            return (array) $article;
+        }, $rawArticles);
+
+        $hydrateAcademicProphecy = $this->prophesize(HydrateAcademic::class);
+        $hydrateAcademicProphecy->__invoke($expectedAcademic)->willReturn($academic);
+        $hydrateAcademic = $hydrateAcademicProphecy->reveal();
+
+        DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
+        DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
+        DB::shouldReceive('select')->with()->twice()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('academic_id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('first')->with()->once()->andReturn($rawAcademic);
+        DB::shouldReceive('limit')->with(5)->once()->andReturnSelf();
+        DB::shouldReceive('get')->with()->once()->andReturn($collection);
+        $db = $this->app->get('db');
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
-        $logger->log(Argument::any(), Argument::any())
-            ->shouldNotBeCalled();
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $logger->log(Argument::any(), Argument::any())->shouldNotBeCalled();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $hydrateAcademic,
             $logger->reveal()
         );
 
@@ -70,6 +78,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         return [
             [
                 ['id' => 1],
+                [new stdClass()],
                 $this->factoryFaker->instance(Academic::class),
             ],
         ];
@@ -79,32 +88,23 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      * @test
      * @dataProvider getByIdConnectionExceptionDataProvider
      */
-    public function should_throw_an_connection_error_on_get_academic(AcademicRegistrationNumber $academicID,
-                                                                     QueryException $exception
+    public function should_throw_an_connection_error_on_get_academic(
+        AcademicRegistrationNumber $academicID,
+        QueryException $exception
     ): void {
         $this->expectException(ImpossibleToRetrieveAcademics::class);
-
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->getById($academicID)
-            ->shouldBeCalledOnce()
-            ->willThrow($exception);
-
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromArray(Argument::any())->shouldNotBeCalled();
+        DB::shouldReceive('table')->with('academics')->andThrow($exception);
+        $db = $this->app->get('db');
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
         $logger->error('database failure', ['exception' => $exception, 'academic_id' => (string) $academicID])
             ->shouldBeCalledOnce();
 
-        $db = $this->prophesize(DatabaseManager::class);
-
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 
@@ -126,27 +126,29 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
     {
         $this->expectException(AcademicNotFound::class);
 
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->getById($academicID)
-            ->shouldBeCalledOnce()
-            ->willReturn(null);
+        $collectionProphecy = $this->prophesize(Collection::class);
+        $collectionProphecy->toArray()->willReturn([]);
+        $collection = $collectionProphecy->reveal();
 
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromArray(Argument::any())->shouldNotBeCalled();
+        DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
+        DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
+        DB::shouldReceive('select')->with()->twice()->andReturnSelf();
+        DB::shouldReceive('limit')->with(5)->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string) $academicID)->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('academic_id', '=', (string) $academicID)->once()->andReturnSelf();
+        DB::shouldReceive('first')->with()->once()->andReturn(null);
+        DB::shouldReceive('get')->with()->once()->andReturn($collection);
+        $db = $this->app->get('db');
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
         $logger->warning('academic not found', ['academic_id' => (string) $academicID])
             ->shouldBeCalledOnce();
 
-        $db = $this->prophesize(DatabaseManager::class);
-
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 
@@ -165,39 +167,32 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      * @dataProvider listDataProvider
      */
     public function should_list_academics_from_the_database(
-        array $rawAcademics,
+        Collection $academicsCollection,
         AcademicCollection $collection,
         $skip,
         $take,
         $expectedTake
     ): void {
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
+        DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
+        DB::shouldReceive('select')->with()->once()->andReturnSelf();
+        DB::shouldReceive('skip')->with($skip)->once()->andReturnSelf();
+        DB::shouldReceive('take')->with($expectedTake)->once()->andReturnSelf();
+        DB::shouldReceive('get')->with()->once()->andReturn($academicsCollection);
+        $db = $this->app->get('db');
 
+        $hydrateAcademicProphecy = $this->prophesize(HydrateAcademic::class);
         foreach ($collection->toArray() as $index => $academic) {
-            $academicMapper->fromArray((array) $rawAcademics[$index])
+            $hydrateAcademicProphecy->__invoke((array) $academicsCollection[$index])
                 ->shouldBeCalledOnce()
                 ->willReturn($academic);
         }
-
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->getAll(new Pagination($skip, $expectedTake))
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademics);
-
-        // Mocking Logger
-        $logger = $this->prophesize(LoggerInterface::class);
-        $logger->log(Argument::any(), Argument::any())
-            ->shouldNotBeCalled();
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $hydrateAcademic = $hydrateAcademicProphecy->reveal();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
-            $logger->reveal()
+            $db,
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $hydrateAcademic,
+            $this->prophesize(LoggerInterface::class)->reveal()
         );
 
         $retrievedCollection = $repository->list($skip, $take);
@@ -207,9 +202,16 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
     public function listDataProvider(): array
     {
+        $stdOne = new stdClass();
+        $stdOne->a = 1;
+        $stdTwo = new stdClass();
+        $stdTwo->a = 2;
+        $stdThree = new stdClass();
+        $stdThree->a = 3;
+
         return [
             [
-                [['id' => 1]],
+                $academicsCollection = new Collection([$stdOne]),
                 new AcademicCollection(
                     $this->factoryFaker->instance(Academic::class)
                 ),
@@ -218,7 +220,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
                 10,
             ],
             [
-                [['id' => 1], ['id' => 2]],
+                $academicsCollection = new Collection([$stdTwo, $stdThree]),
                 new AcademicCollection(
                     $this->factoryFaker->instance(Academic::class),
                     $this->factoryFaker->instance(Academic::class)
@@ -237,29 +239,16 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
     public function should_throw_an_connection_error_on_list_academics(QueryException $exception, $skip, $take): void
     {
         $this->expectException(ImpossibleToRetrieveAcademics::class);
+        DB::shouldReceive('table')->with('academics')->once()->andThrow($exception);
+        $db = $this->app->get('db');
 
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromArray(Argument::any())
-            ->shouldNotBeCalled();
-
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->getAll(new Pagination($skip, $take))
-            ->shouldBeCalledOnce()
-            ->willThrow($exception);
-
-        // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
-        $logger->warning('database failure', ['exception' => $exception])
-            ->shouldBeCalledOnce();
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $logger->warning('database failure', ['exception' => $exception])->shouldBeCalledOnce();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 
@@ -280,12 +269,6 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      */
     public function should_generate_next_uuid(): void
     {
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-
-        // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
 
@@ -294,8 +277,8 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         $db = $this->app->get('db');
         $repository = new AcademicQueryBuilderRepository(
             $db,
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $this->prophesize(SerializeAcademic::class)->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 
@@ -308,27 +291,29 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      */
     public function should_store_an_academic_in_the_database(Academic $academic, array $rawAcademic): void
     {
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->save($rawAcademic)
-            ->shouldBeCalledOnce();
+        $rawArticles = $rawAcademic['articles'];
+        $rawAcademicWithoutArticles = $rawAcademic;
+        unset($rawAcademicWithoutArticles['articles']);
+        DB::shouldReceive('beginTransaction')->once();
+        DB::shouldReceive('commit')->once();
+        DB::shouldReceive('table')->with('articles')->andReturnSelf();
+        DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
+        DB::shouldReceive('insert')->with($rawAcademicWithoutArticles)->once()->andReturn(1);
+        foreach ($rawArticles as $rawArticle) {
+            DB::shouldReceive('insert')->with($rawArticle)->once()->andReturn(1);
+        }
+        $db = $this->app->get('db');
 
         // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromAcademic($academic)
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademic);
-
-        // Mocking Logger
-        $logger = $this->prophesize(LoggerInterface::class);
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
+        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
+        $serializeAcademic = $serializeAcademicProphecy->reveal();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
-            $logger->reveal()
+            $db,
+            $serializeAcademic,
+            $this->prophesize(HydrateAcademic::class)->reveal(),
+            $this->prophesize(LoggerInterface::class)->reveal()
         );
 
         $repository->add($academic);
@@ -337,7 +322,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
     public function addDataProvider(): array
     {
         return [
-            [$this->factoryFaker->instance(Academic::class), []],
+            [$this->factoryFaker->instance(Academic::class), ['id' => 1, 'articles' => [['id' => 2], ['id' => 3]]]],
         ];
     }
 
@@ -345,35 +330,30 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      * @test
      * @dataProvider addConnectionErrorDataProvider
      */
-    public function should_throw_an_connection_error_on_store_academic(Academic $academic,
-                                                                       array $rawAcademic,
-                                                                       QueryException $exception
+    public function should_throw_an_connection_error_on_store_academic(
+        Academic $academic,
+        array $rawAcademic,
+        QueryException $exception
     ): void {
+        $rawAcademicWithoutArticles = $rawAcademic;
+        unset($rawAcademicWithoutArticles['articles']);
         $this->expectException(ImpossibleToSaveAcademic::class);
-
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->save($rawAcademic)
-            ->willThrow($exception);
+        DB::shouldReceive('beginTransaction')->with()->once()->andThrow($exception);
+        $db = $this->app->get('db');
 
         // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromAcademic($academic)
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademic);
+        $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
+        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
-        $logger = $this->prophesize(LoggerInterface::class);
-        $logger->error('database failure', ['exception' => $exception, 'academic' => $rawAcademic])
-            ->shouldBeCalledOnce();
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $loggerProphecy = $this->prophesize(LoggerInterface::class);
+        $loggerProphecy->error('database failure', ['exception' => $exception, 'academic' => $rawAcademicWithoutArticles])->shouldBeCalledOnce();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
-            $logger->reveal()
+            $db,
+            $serializeAcademicProphecy->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
+            $loggerProphecy->reveal()
         );
 
         $repository->add($academic);
@@ -382,7 +362,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
     public function addConnectionErrorDataProvider(): array
     {
         return [
-            [$this->factoryFaker->instance(Academic::class), [], new QueryException('', [], new Exception())],
+            [$this->factoryFaker->instance(Academic::class), ['id' => 1, 'articles' => [['id' => 2], ['id' => 3]]], new QueryException('', [], new Exception())],
         ];
     }
 
@@ -392,26 +372,30 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
      */
     public function should_update_an_academic_in_the_database(Academic $academic, array $rawAcademic): void
     {
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->update($academic->registrationNumber(), $rawAcademic)
-            ->shouldBeCalledOnce();
+        $rawAcademicWithoutArticles = $rawAcademic;
+        unset($rawAcademicWithoutArticles['articles']);
+        DB::shouldReceive('beginTransaction')->with()->once()->andReturnSelf();
+        DB::shouldReceive('commit')->with()->once()->andReturnSelf();
+        DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
+        DB::shouldReceive('table')->with('articles')->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('update')->with($rawAcademicWithoutArticles)->once();
+        foreach ($rawAcademic['articles'] as $rawArticle) {
+            DB::shouldReceive('updateOrInsert')->with(['id' => $rawArticle['id']], $rawArticle)->once();
+        }
+        $db = $this->app->get('db');
 
         // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromAcademic($academic)
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademic);
+        $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
+        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
 
-        $db = $this->prophesize(DatabaseManager::class);
-
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $serializeAcademicProphecy->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 
@@ -428,29 +412,21 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         QueryException $exception
     ): void {
         $this->expectException(ImpossibleToSaveAcademic::class);
-
-        // Mocking Crud Facade
-        $crudFacade = $this->prophesize(CrudFacade::class);
-        $crudFacade->update($academic->registrationNumber(), $rawAcademic)
-            ->willThrow($exception);
+        DB::shouldReceive('beginTransaction')->with()->once()->andThrow($exception);
+        $db = $this->app->get('db');
 
         // Mocking Academic Mapper
-        $academicMapper = $this->prophesize(AcademicMapper::class);
-        $academicMapper->fromAcademic($academic)
-            ->shouldBeCalledOnce()
-            ->willReturn($rawAcademic);
+        $serilizeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
+        $serilizeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
-        $logger->error('database failure', ['exception' => $exception, 'academic' => $rawAcademic])
-            ->shouldBeCalledOnce();
-
-        $db = $this->prophesize(DatabaseManager::class);
+        $logger->error('database failure', ['exception' => $exception, 'academic' => $rawAcademic])->shouldBeCalledOnce();
 
         $repository = new AcademicQueryBuilderRepository(
-            $db->reveal(),
-            $crudFacade->reveal(),
-            $academicMapper->reveal(),
+            $db,
+            $serilizeAcademicProphecy->reveal(),
+            $this->prophesize(HydrateAcademic::class)->reveal(),
             $logger->reveal()
         );
 

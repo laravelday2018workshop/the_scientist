@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Integration\Common\Query;
 
-use Acme\Common\Query\Pagination;
+use App\Integration\Common\Query\Pagination;
 use App\Integration\Common\Query\QueryBuilderSelectAll;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;

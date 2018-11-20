@@ -2,41 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Application\Integration\Article\Mapper;
+namespace Tests\Unit\Application\Integration\Article\Mapper\HydrateArticle;
 
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\Article;
-use App\Integration\Article\Mapper\DatabaseArticleMapper;
-use App\Integration\Article\Mapper\FromArticlePartialMapping;
+use App\Integration\Article\Mapper\Hydrator\DefaultHydrateArticle;
 use DateTimeImmutable;
-use Error;
 use Faker\Generator as Faker;
 use Tests\TestCase;
 
 /**
- * @covers \App\Integration\Article\Mapper\DatabaseArticleMapper
+ * @covers \App\Integration\Article\Mapper\Hydrator\DefaultHydrateArticle
  */
-final class DatabaseArticleMapperTest extends TestCase
+final class DefaultHydrateArticleTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider articleDataProvider
-     */
-    public function should_throw_an_exception_due_to_empty_implementation(Article $article): void
-    {
-        $this->expectException(Error::class);
-        $mapper = new DatabaseArticleMapper();
-        $mapper->fromArticle($article);
-    }
-
     /**
      * @test
      * @dataProvider databaseRecordDataProvider
      */
     public function should_return_an_article(array $rawArticle): void
     {
-        $mapper = new DatabaseArticleMapper(new FromArticlePartialMapping());
-        $article = $mapper->fromArray($rawArticle);
+        $mapper = new DefaultHydrateArticle();
+        $article = $mapper->__invoke($rawArticle);
         $this->assertSame($rawArticle['id'], (string) $article->id());
         $this->assertSame($rawArticle['title'], (string) $article->title());
         $this->assertSame($rawArticle['body'], (string) $article->body());
@@ -53,8 +40,8 @@ final class DatabaseArticleMapperTest extends TestCase
      */
     public function should_return_an_article_withDates(array $rawArticle): void
     {
-        $mapper = new DatabaseArticleMapper(new FromArticlePartialMapping());
-        $article = $mapper->fromArray($rawArticle);
+        $mapper = new DefaultHydrateArticle();
+        $article = $mapper->__invoke($rawArticle);
         $this->assertSame($rawArticle['id'], (string) $article->id());
         $this->assertSame($rawArticle['title'], (string) $article->title());
         $this->assertSame($rawArticle['body'], (string) $article->body());

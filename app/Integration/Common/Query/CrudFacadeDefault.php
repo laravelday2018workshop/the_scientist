@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace App\Integration\Common\Query;
 
-use Acme\Common\Query\Delete;
-use Acme\Common\Query\Insert;
-use Acme\Common\Query\Pagination;
-use Acme\Common\Query\SelectAll;
-use Acme\Common\Query\SelectById;
-use Acme\Common\Query\Update;
 use Acme\Common\ValueObject\EntityID;
 
 final class CrudFacadeDefault implements CrudFacade
@@ -39,11 +33,12 @@ final class CrudFacadeDefault implements CrudFacade
      */
     private $delete;
 
-    public function __construct(SelectById $selectById,
-                                SelectAll $selectAll,
-                                Insert $insert,
-                                Update $update,
-                                Delete $delete
+    public function __construct(
+        SelectById $selectById,
+        SelectAll $selectAll,
+        Insert $insert,
+        Update $update,
+        Delete $delete
     ) {
         $this->selectById = $selectById;
         $this->selectAll = $selectAll;
@@ -52,9 +47,9 @@ final class CrudFacadeDefault implements CrudFacade
         $this->delete = $delete;
     }
 
-    public function getById(EntityId $entityId): ?array
+    public function getById(EntityID $entityID): ?array
     {
-        return ($this->selectById)($entityId);
+        return ($this->selectById)($entityID);
     }
 
     public function getAll(Pagination $pagination): array

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Integration\Common\Query;
 
-use Acme\Common\Query\Pagination;
 use Acme\Common\ValueObject\EntityID;
 
 interface CrudFacade
 {
-    public function getById(EntityId $entityId): ?array;
+    public function getById(EntityID $entityID): ?array;
 
     public function getAll(Pagination $pagination): array;
 
