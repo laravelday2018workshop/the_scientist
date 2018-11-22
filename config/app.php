@@ -167,7 +167,8 @@ return [
         /*
          * Package Service Providers...
          */
-
+        App\Integration\Academic\AcademicServiceProvider::class,
+        App\Integration\Article\ArticleServiceProvider::class,
         /*
          * Application Service Providers...
          */
