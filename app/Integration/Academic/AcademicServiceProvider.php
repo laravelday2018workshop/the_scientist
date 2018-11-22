@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Integration\Academic;
 
 use Acme\Academic\Repository\AcademicRepository;
@@ -17,18 +19,13 @@ class AcademicServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
     public function boot()
     {
-        //
     }
 
     /**
      * Register services.
-     *
-     * @return void
      */
     public function register()
     {

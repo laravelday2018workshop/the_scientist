@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Integration\Article;
 
 use Acme\Article\Repository\ArticleRepository;
@@ -16,18 +18,13 @@ class ArticleServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
     public function boot()
     {
-        //
     }
 
     /**
      * Register services.
-     *
-     * @return void
      */
     public function register()
     {
@@ -35,7 +32,6 @@ class ArticleServiceProvider extends ServiceProvider
         $this->app->when(ArticleRepository::class)->needs(CrudFacade::class)->give(function () {
             return $this->app->get(CrudFacadeDefaultBuilder::class)->build(ArticleQueryBuilderRepository::TABLE_NAME);
         });
-
 
         $this->app->bind(SerializeArticle::class, DefaultSerializeArticle::class);
         $this->app->bind(HydrateArticle::class, DefaultHydrateArticle::class);
