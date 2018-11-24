@@ -55,6 +55,11 @@ class WriteArticleTest extends TestCase
         $response->assertJson(
             [
                 'id' => (string) $academic->registrationNumber(),
+                'first_name' => (string) $academic->firstName(),
+                'last_name' => (string) $academic->lastName(),
+                'email' => (string) $academic->email(),
+                'major' => (string) $academic->major(),
+                'birth_date' => (string) $academic->birthDate(),
                 'articles' => [[
                     'id' => (string) $storedAcademic->articles()->toArray()[0]->id(),
                     'title' => (string) $storedAcademic->articles()->toArray()[0]->title(),

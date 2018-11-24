@@ -6,6 +6,12 @@ namespace Tests;
 
 use Acme\Academic\Academic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
+use Acme\Academic\ValueObject\BirthDate;
+use Acme\Academic\ValueObject\Email;
+use Acme\Academic\ValueObject\FirstName;
+use Acme\Academic\ValueObject\LastName;
+use Acme\Academic\ValueObject\Major;
+use Acme\Academic\ValueObject\Password;
 use Acme\Article\Article;
 use Acme\Article\ArticleCollection;
 use Acme\Article\ValueObject\ArticleID;
@@ -75,12 +81,42 @@ abstract class TestCase extends BaseTestCase
         $factoryMuffin->define(Academic::class)->setMaker(function () use ($factoryMuffin): Academic {
             return new Academic(
                 $factoryMuffin->instance(AcademicRegistrationNumber::class),
+                $factoryMuffin->instance(FirstName::class),
+                $factoryMuffin->instance(LastName::class),
+                $factoryMuffin->instance(Email::class),
+                $factoryMuffin->instance(Password::class),
+                $factoryMuffin->instance(Major::class),
+                $factoryMuffin->instance(BirthDate::class),
                 new ArticleCollection()
             );
         });
 
         $factoryMuffin->define(AcademicRegistrationNumber::class)->setMaker(function () use ($faker): AcademicRegistrationNumber {
             return AcademicRegistrationNumber::fromInteger($faker->numberBetween(1000000000, 9000000000));
+        });
+
+        $factoryMuffin->define(FirstName::class)->setMaker(function () use ($faker): FirstName {
+            return new FirstName($faker->firstName);
+        });
+
+        $factoryMuffin->define(LastName::class)->setMaker(function () use ($faker): LastName {
+            return new LastName($faker->lastName);
+        });
+
+        $factoryMuffin->define(Email::class)->setMaker(function () use ($faker): Email {
+            return new Email($faker->firstName.Email::EMAIL_DOMAIN);
+        });
+
+        $factoryMuffin->define(Password::class)->setMaker(function () use ($faker): Password {
+            return Password::fromClearPassword($faker->password);
+        });
+
+        $factoryMuffin->define(Major::class)->setMaker(function () use ($faker): Major {
+            return Major::BIOLOGICAL_SCIENCE();
+        });
+
+        $factoryMuffin->define(BirthDate::class)->setMaker(function () use ($faker): BirthDate {
+            return BirthDate::fromString($faker->dateTime('-25 years')->format(BirthDate::DATE_FORMAT));
         });
 
         $factoryMuffin->define(Reviewer::class)->setMaker(function () use ($factoryMuffin): Reviewer {

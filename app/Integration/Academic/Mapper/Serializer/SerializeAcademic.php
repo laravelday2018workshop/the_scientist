@@ -8,5 +8,7 @@ use Acme\Academic\Academic;
 
 interface SerializeAcademic
 {
-    public function __invoke(Academic $academic): array;
+    public function withPassword(Academic $academic): array;
+
+    public function withoutPassword(Academic $academic): array;
 }

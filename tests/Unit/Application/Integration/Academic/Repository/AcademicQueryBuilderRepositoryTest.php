@@ -11,7 +11,7 @@ use Acme\Academic\Repository\Exception\AcademicNotFound;
 use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use App\Integration\Academic\Mapper\FromArray\HydrateAcademic;
+use App\Integration\Academic\Mapper\Hydrator\HydrateAcademic;
 use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 use App\Integration\Academic\Repository\AcademicQueryBuilderRepository;
 use Exception;
@@ -282,7 +282,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
             $logger->reveal()
         );
 
-        $this->assertInstanceOf(AcademicRegistrationNumber::class, $repository->nextID());
+        $this->assertInstanceOf(AcademicRegistrationNumber::class, $repository->nextRegistrationNumber());
     }
 
     /**
@@ -306,7 +306,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         // Mocking Academic Mapper
         $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
-        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
+        $serializeAcademicProphecy->withPassword($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
         $serializeAcademic = $serializeAcademicProphecy->reveal();
 
         $repository = new AcademicQueryBuilderRepository(
@@ -343,7 +343,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         // Mocking Academic Mapper
         $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
-        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
+        $serializeAcademicProphecy->withPassword($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
@@ -387,7 +387,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         // Mocking Academic Mapper
         $serializeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
-        $serializeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
+        $serializeAcademicProphecy->withPassword($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
@@ -417,7 +417,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         // Mocking Academic Mapper
         $serilizeAcademicProphecy = $this->prophesize(SerializeAcademic::class);
-        $serilizeAcademicProphecy->__invoke($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
+        $serilizeAcademicProphecy->withPassword($academic)->shouldBeCalledOnce()->willReturn($rawAcademic);
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);

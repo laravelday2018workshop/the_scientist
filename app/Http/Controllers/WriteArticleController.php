@@ -38,6 +38,6 @@ final class WriteArticleController extends Controller
         );
         $academic = ($this->handler)($command);
 
-        return response()->json(($this->serializeAcademic)($academic), 201);
+        return response()->json($this->serializeAcademic->withoutPassword($academic), 201);
     }
 }
