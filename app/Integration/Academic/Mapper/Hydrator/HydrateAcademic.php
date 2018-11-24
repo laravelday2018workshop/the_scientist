@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Integration\Academic\Mapper\FromArray;
+namespace App\Integration\Academic\Mapper\Hydrator;
 
 use Acme\Academic\Academic;
 

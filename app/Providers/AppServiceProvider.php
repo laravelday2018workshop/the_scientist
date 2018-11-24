@@ -6,8 +6,9 @@ namespace App\Providers;
 
 use Acme\Academic\Repository\AcademicRepository;
 use Acme\Article\Repository\ArticleRepository;
-use App\Integration\Academic\Mapper\FromArray\DefaultHydrateAcademic;
-use App\Integration\Academic\Mapper\FromArray\HydrateAcademic;
+use Acme\Common\EventHandler\EventDispatcher;
+use App\Integration\Academic\Mapper\Hydrator\DefaultHydrateAcademic;
+use App\Integration\Academic\Mapper\Hydrator\HydrateAcademic;
 use App\Integration\Academic\Mapper\Serializer\DefaultSerializeAcademic;
 use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 use App\Integration\Academic\Repository\AcademicQueryBuilderRepository;
@@ -18,6 +19,7 @@ use App\Integration\Article\Mapper\Serializer\SerializeArticle;
 use App\Integration\Article\Repository\ArticleQueryBuilderRepository;
 use App\Integration\Common\Query\CrudFacade;
 use App\Integration\Common\Query\CrudFacadeDefaultBuilder;
+use App\Service\EventHandler\EventDispatcher as DefaultEventDispatcher;
 use Illuminate\Log\Logger;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,5 +45,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(HydrateAcademic::class, DefaultHydrateAcademic::class);
         $this->app->bind(SerializeArticle::class, DefaultSerializeArticle::class);
         $this->app->bind(HydrateArticle::class, DefaultHydrateArticle::class);
+        $this->app->bind(EventDispatcher::class, DefaultEventDispatcher::class);
     }
 }

@@ -43,7 +43,7 @@ class InMemoryAcademicRepository implements AcademicRepository
         return new AcademicCollection(...$academics);
     }
 
-    public function nextID(): AcademicRegistrationNumber
+    public function nextRegistrationNumber(): AcademicRegistrationNumber
     {
         return AcademicRegistrationNumber::fromInteger(\random_int(1000000000, 9000000000));
     }

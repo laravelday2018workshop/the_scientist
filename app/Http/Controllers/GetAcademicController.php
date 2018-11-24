@@ -36,7 +36,7 @@ final class GetAcademicController extends Controller
         $id = $request->route()->parameter('id');
         $command = new GetAcademicCommand(AcademicRegistrationNumber::fromString($id));
         $academic = ($this->handler)($command);
-        $response = ($this->serializeAcademic)($academic);
+        $response = $this->serializeAcademic->withoutPassword($academic);
 
         return response()->json($response);
     }
