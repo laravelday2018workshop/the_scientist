@@ -19,11 +19,25 @@ final class DefaultSerializeAcademic implements SerializeAcademic
         $this->articleMapping = $articleMapping;
     }
 
-    public function __invoke(Academic $academic): array
+    public function withPassword(Academic $academic): array
     {
         return [
             'id' => (string) $academic->registrationNumber(),
+            'first_name' => (string) $academic->firstName(),
+            'last_name' => (string) $academic->lastName(),
+            'email' => (string) $academic->email(),
+            'password' => (string) $academic->password(),
+            'major' => (string) $academic->major(),
+            'birth_date' => (string) $academic->birthDate(),
             'articles' => \array_map($this->articleMapping, $academic->articles()->toArray()),
         ];
+    }
+
+    public function withoutPassword(Academic $academic): array
+    {
+        $map = $this->withPassword($academic);
+        unset($map['password']);
+
+        return $map;
     }
 }

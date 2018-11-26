@@ -2,28 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Acme\Academic;
+namespace Acme\Academic\UseCase\RegisterAcademic;
 
-use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Academic\ValueObject\BirthDate;
 use Acme\Academic\ValueObject\Email;
 use Acme\Academic\ValueObject\FirstName;
 use Acme\Academic\ValueObject\LastName;
 use Acme\Academic\ValueObject\Major;
 use Acme\Academic\ValueObject\Password;
-use Acme\Article\Article;
-use Acme\Article\ArticleCollection;
 
-final class Academic
+final class RegisterAcademicCommand
 {
-    /**
-     * @var AcademicRegistrationNumber
-     */
-    private $registrationNumber;
-    /**
-     * @var ArticleCollection
-     */
-    private $articles;
     /**
      * @var FirstName
      */
@@ -50,67 +39,48 @@ final class Academic
     private $password;
 
     public function __construct(
-        AcademicRegistrationNumber $registrationNumber,
         FirstName $firstName,
         LastName $lastName,
         Email $email,
         Password $password,
-        Major $major,
         BirthDate $birthDate,
-        ArticleCollection $articles
+        Major $major
     ) {
-        $this->registrationNumber = $registrationNumber;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
         $this->birthDate = $birthDate;
-        $this->articles = $articles;
         $this->major = $major;
     }
 
-    public function registrationNumber(): AcademicRegistrationNumber
-    {
-        return $this->registrationNumber;
-    }
-
-    public function articles(): ArticleCollection
-    {
-        return $this->articles;
-    }
-
-    public function firstName(): FirstName
+    public function getFirstName(): FirstName
     {
         return $this->firstName;
     }
 
-    public function lastName(): LastName
+    public function getLastName(): LastName
     {
         return $this->lastName;
     }
 
-    public function email(): Email
+    public function getEmail(): Email
     {
         return $this->email;
     }
 
-    public function password(): Password
+    public function getPassword(): Password
     {
         return $this->password;
     }
 
-    public function major(): Major
-    {
-        return $this->major;
-    }
-
-    public function birthDate(): BirthDate
+    public function getBirthDate(): BirthDate
     {
         return $this->birthDate;
     }
 
-    public function write(Article $article): void
+    public function getMajor(): Major
     {
-        $this->articles = $this->articles->withArticle($article);
+        return $this->major;
     }
 }

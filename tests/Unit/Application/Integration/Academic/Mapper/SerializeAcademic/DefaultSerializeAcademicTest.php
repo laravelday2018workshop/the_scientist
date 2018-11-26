@@ -22,8 +22,33 @@ final class DefaultSerializeAcademicTest extends TestCase
     {
         $fromArticleMapper = $this->prophesize(SerializeArticle::class)->reveal();
         $mapper = new DefaultSerializeAcademic($fromArticleMapper);
-        $academicArray = $mapper($academic);
+        $academicArray = $mapper->withPassword($academic);
         $this->assertSame($academicArray['id'], (string) $academic->registrationNumber());
+        $this->assertSame($academicArray['first_name'], (string) $academic->firstName());
+        $this->assertSame($academicArray['last_name'], (string) $academic->lastName());
+        $this->assertSame($academicArray['email'], (string) $academic->email());
+        $this->assertSame($academicArray['password'], (string) $academic->password());
+        $this->assertSame($academicArray['major'], (string) $academic->major());
+        $this->assertSame($academicArray['birth_date'], (string) $academic->birthDate());
+        $this->assertSame([], $academicArray['articles']);
+    }
+
+    /**
+     * @test
+     * @dataProvider academicDataProvider
+     */
+    public function should_properly_map_the_academic_without_password(Academic $academic): void
+    {
+        $fromArticleMapper = $this->prophesize(SerializeArticle::class)->reveal();
+        $mapper = new DefaultSerializeAcademic($fromArticleMapper);
+        $academicArray = $mapper->withoutPassword($academic);
+        $this->assertArrayNotHasKey('password', $academicArray);
+        $this->assertSame($academicArray['id'], (string) $academic->registrationNumber());
+        $this->assertSame($academicArray['first_name'], (string) $academic->firstName());
+        $this->assertSame($academicArray['last_name'], (string) $academic->lastName());
+        $this->assertSame($academicArray['email'], (string) $academic->email());
+        $this->assertSame($academicArray['major'], (string) $academic->major());
+        $this->assertSame($academicArray['birth_date'], (string) $academic->birthDate());
         $this->assertSame([], $academicArray['articles']);
     }
 

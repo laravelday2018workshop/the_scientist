@@ -12,7 +12,7 @@ use Acme\Academic\Repository\Exception\ImpossibleToRetrieveAcademics;
 use Acme\Academic\Repository\Exception\ImpossibleToSaveAcademic;
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
 use Acme\Article\ValueObject\ArticleID;
-use App\Integration\Academic\Mapper\FromArray\HydrateAcademic;
+use App\Integration\Academic\Mapper\Hydrator\HydrateAcademic;
 use App\Integration\Academic\Mapper\Serializer\SerializeAcademic;
 use App\Integration\Article\Repository\ArticleQueryBuilderRepository;
 use Illuminate\Database\DatabaseManager;
@@ -49,13 +49,13 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
 
     public function __construct(
         DatabaseManager $databaseManager,
-        SerializeAcademic $fromAcademicMapper,
+        SerializeAcademic $serializeAcademic,
         HydrateAcademic $fromArrayMapper,
         LoggerInterface $logger
     ) {
         $this->logger = $logger;
         $this->databaseManager = $databaseManager;
-        $this->serializeAcademic = $fromAcademicMapper;
+        $this->serializeAcademic = $serializeAcademic;
         $this->hydrateAcademic = $fromArrayMapper;
     }
 
@@ -111,7 +111,7 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
         return $this->serializeList($rawAcademics);
     }
 
-    public function nextID(): AcademicRegistrationNumber
+    public function nextRegistrationNumber(): AcademicRegistrationNumber
     {
         $nextNumber = $this->databaseManager->table(self::SEQUENCE_ACADEMIC_ID)->increment('id');
 
@@ -128,7 +128,7 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      */
     public function add(Academic $academic): void
     {
-        $rawAcademic = ($this->serializeAcademic)($academic);
+        $rawAcademic = $this->serializeAcademic->withPassword($academic);
         $rawArticles = $rawAcademic['articles'];
         unset($rawAcademic['articles']);
 
@@ -150,7 +150,7 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
      */
     public function update(Academic $academic): void
     {
-        $rawAcademic = ($this->serializeAcademic)($academic);
+        $rawAcademic = $this->serializeAcademic->withPassword($academic);
         $rawArticles = $rawAcademic['articles'];
         $rawAcademicWithoutArticles = $rawAcademic;
         unset($rawAcademicWithoutArticles['articles']);

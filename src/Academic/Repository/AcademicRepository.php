@@ -34,7 +34,7 @@ interface AcademicRepository
     /**
      * @throws UnexpectedError
      */
-    public function nextID(): AcademicRegistrationNumber;
+    public function nextRegistrationNumber(): AcademicRegistrationNumber;
 
     /**
      * @throws ImpossibleToSaveAcademic
