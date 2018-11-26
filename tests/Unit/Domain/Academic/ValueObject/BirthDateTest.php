@@ -65,7 +65,7 @@ final class BirthDateTest extends TestCase
     public function validBirthDateDataProvider(): array
     {
         return [
-            ['1990-10-10 10:10:10'],
+            ['1990-10-10'],
         ];
     }
 

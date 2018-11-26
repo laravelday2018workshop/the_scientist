@@ -25,7 +25,7 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
 {
     public const TABLE_NAME = 'academics';
 
-    private const SEQUENCE_ACADEMIC_ID = 'sequence_academic_id';
+    private const SEQUENCE_ACADEMIC_ID = 'academic_id_sequence';
 
     /**
      * @var LoggerInterface
@@ -113,9 +113,10 @@ final class AcademicQueryBuilderRepository implements AcademicRepository
 
     public function nextRegistrationNumber(): AcademicRegistrationNumber
     {
-        $nextNumber = $this->databaseManager->table(self::SEQUENCE_ACADEMIC_ID)->increment('id');
+        $this->databaseManager->table(self::SEQUENCE_ACADEMIC_ID)->insert(['id' => null]);
+        $nextNumber = $this->databaseManager->getPdo()->lastInsertId();
 
-        return AcademicRegistrationNumber::fromInteger($nextNumber);
+        return AcademicRegistrationNumber::fromInteger((int) $nextNumber);
     }
 
     public function nextArticleID(): ArticleID

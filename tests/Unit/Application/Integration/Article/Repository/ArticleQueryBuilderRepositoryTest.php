@@ -248,7 +248,7 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
     public function addDataProvider(): array
     {
         return [
-            [$this->factoryFaker->instance(Article::class), []],
+            [$this->factoryFaker->instance(Article::class), ['id' => 1]],
         ];
     }
 
@@ -319,6 +319,7 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
     public function should_update_an_article_in_the_database(Article $article, array $rawArticle): void
     {
         DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', $rawArticle['id'])->once()->andReturnSelf();
         DB::shouldReceive('update')->with($rawArticle)->once()->andReturn(1);
         $db = $this->app->get('db');
 
@@ -371,6 +372,7 @@ final class ArticleQueryBuilderRepositoryTest extends TestCase
     {
         $this->expectException(ImpossibleToSaveArticle::class);
         DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', $rawArticle['id'])->once()->andReturnSelf();
         DB::shouldReceive('update')->with($rawArticle)->once()->andReturn(0);
         $db = $this->app->get('db');
 

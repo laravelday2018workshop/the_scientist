@@ -10,7 +10,7 @@ use DateTimeImmutable;
 final class BirthDate
 {
     public const MIN_AGE = 18;
-    public const DATE_FORMAT = 'Y-m-d H:i:s';
+    public const DATE_FORMAT = 'Y-m-d';
 
     /**
      * @var DateTimeImmutable

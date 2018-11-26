@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\AcademicIDRule;
+use App\Rules\AcademicRegistrationNumberRule;
 use App\Rules\ArticleBodyRule;
 use App\Rules\ArticleTitleRule;
 use Illuminate\Contracts\Validation\Validator;
@@ -23,7 +23,7 @@ final class WriteArticleRequest extends FormRequest
         return [
             'title' => ['required', 'string', new ArticleTitleRule()],
             'body' => ['required', 'string', new ArticleBodyRule()],
-            'id' => ['required', 'string', new AcademicIDRule()],
+            'id' => ['required', 'string', new AcademicRegistrationNumberRule()],
         ];
     }
 
