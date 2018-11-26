@@ -20,9 +20,10 @@ class CreateAcademicsTable extends Migration
                 $table->string('id', 18);
                 $table->string('first_name', 50);
                 $table->string('last_name', 50);
+                $table->string('email', 200);
+                $table->string('password', 200);
                 $table->date('birth_date');
                 $table->string('major', 100);
-                $table->dateTime('registered_at');
 
                 $table->index('registration_number');
                 $table->index(['first_name', 'last_name']);
