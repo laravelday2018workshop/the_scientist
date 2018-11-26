@@ -123,7 +123,7 @@ final class ArticleQueryBuilderRepository implements ArticleRepository
         $rawArticle = ($this->fromArticleMapper)($article);
 
         try {
-            $update = $this->database->table(self::TABLE_NAME)->update($rawArticle);
+            $update = $this->database->table(self::TABLE_NAME)->where('id', $rawArticle['id'])->update($rawArticle);
         } catch (QueryException $e) {
             $this->logger->error('database failure', ['exception' => $e, 'article' => $rawArticle]);
             throw new ImpossibleToSaveArticle($e);

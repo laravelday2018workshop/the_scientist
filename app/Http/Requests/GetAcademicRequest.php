@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\AcademicIDRule;
+use App\Rules\AcademicRegistrationNumberRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -19,7 +19,7 @@ class GetAcademicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'string', new AcademicIDRule()],
+            'id' => ['required', 'string', new AcademicRegistrationNumberRule()],
         ];
     }
 

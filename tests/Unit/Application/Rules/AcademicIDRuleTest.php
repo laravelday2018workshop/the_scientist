@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Rules;
 
 use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use App\Rules\AcademicIDRule;
+use App\Rules\AcademicRegistrationNumberRule;
 use Faker\Generator as Faker;
 use Tests\TestCase;
 
 /**
- * @covers \App\Rules\AcademicIDRule
+ * @covers \App\Rules\AcademicRegistrationNumberRule
  */
 class AcademicIDRuleTest extends TestCase
 {
@@ -20,7 +20,7 @@ class AcademicIDRuleTest extends TestCase
      */
     public function should_return_true(string $attribute, string $value): void
     {
-        $rule = new AcademicIDRule();
+        $rule = new AcademicRegistrationNumberRule();
         $this->assertTrue($rule->passes($attribute, $value));
     }
 
@@ -30,7 +30,7 @@ class AcademicIDRuleTest extends TestCase
      */
     public function should_return_false_and_set_the_message(string $attribute, string $value): void
     {
-        $rule = new AcademicIDRule();
+        $rule = new AcademicRegistrationNumberRule();
         $this->assertEmpty($rule->message());
         $this->assertFalse($rule->passes($attribute, $value));
         $this->assertNotEmpty($rule->message());

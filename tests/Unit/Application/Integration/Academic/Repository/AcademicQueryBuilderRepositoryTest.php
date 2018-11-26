@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use PDO;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -40,7 +41,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         $expectedAcademic = $rawAcademic;
         $expectedAcademic['articles'] = \array_map(function (stdClass $article) {
-            return (array) $article;
+            return (array)$article;
         }, $rawArticles);
 
         $hydrateAcademicProphecy = $this->prophesize(HydrateAcademic::class);
@@ -50,8 +51,8 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
         DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
         DB::shouldReceive('select')->with()->twice()->andReturnSelf();
-        DB::shouldReceive('where')->with('id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
-        DB::shouldReceive('where')->with('academic_id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string)$academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('academic_id', '=', (string)$academic->registrationNumber())->once()->andReturnSelf();
         DB::shouldReceive('first')->with()->once()->andReturn($rawAcademic);
         DB::shouldReceive('limit')->with(5)->once()->andReturnSelf();
         DB::shouldReceive('get')->with()->once()->andReturn($collection);
@@ -91,14 +92,15 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
     public function should_throw_an_connection_error_on_get_academic(
         AcademicRegistrationNumber $academicID,
         QueryException $exception
-    ): void {
+    ): void
+    {
         $this->expectException(ImpossibleToRetrieveAcademics::class);
         DB::shouldReceive('table')->with('academics')->andThrow($exception);
         $db = $this->app->get('db');
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
-        $logger->error('database failure', ['exception' => $exception, 'academic_id' => (string) $academicID])
+        $logger->error('database failure', ['exception' => $exception, 'academic_id' => (string)$academicID])
             ->shouldBeCalledOnce();
 
         $repository = new AcademicQueryBuilderRepository(
@@ -134,15 +136,15 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('table')->with('articles')->once()->andReturnSelf();
         DB::shouldReceive('select')->with()->twice()->andReturnSelf();
         DB::shouldReceive('limit')->with(5)->once()->andReturnSelf();
-        DB::shouldReceive('where')->with('id', '=', (string) $academicID)->once()->andReturnSelf();
-        DB::shouldReceive('where')->with('academic_id', '=', (string) $academicID)->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string)$academicID)->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('academic_id', '=', (string)$academicID)->once()->andReturnSelf();
         DB::shouldReceive('first')->with()->once()->andReturn(null);
         DB::shouldReceive('get')->with()->once()->andReturn($collection);
         $db = $this->app->get('db');
 
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
-        $logger->warning('academic not found', ['academic_id' => (string) $academicID])
+        $logger->warning('academic not found', ['academic_id' => (string)$academicID])
             ->shouldBeCalledOnce();
 
         $repository = new AcademicQueryBuilderRepository(
@@ -172,7 +174,8 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         $skip,
         $take,
         $expectedTake
-    ): void {
+    ): void
+    {
         DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
         DB::shouldReceive('select')->with()->once()->andReturnSelf();
         DB::shouldReceive('skip')->with($skip)->once()->andReturnSelf();
@@ -182,7 +185,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
 
         $hydrateAcademicProphecy = $this->prophesize(HydrateAcademic::class);
         foreach ($collection->toArray() as $index => $academic) {
-            $hydrateAcademicProphecy->__invoke((array) $academicsCollection[$index])
+            $hydrateAcademicProphecy->__invoke((array)$academicsCollection[$index])
                 ->shouldBeCalledOnce()
                 ->willReturn($academic);
         }
@@ -272,8 +275,14 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         // Mocking Logger
         $logger = $this->prophesize(LoggerInterface::class);
 
-        DB::shouldReceive('table')->with('sequence_academic_id')->once()->andReturnSelf();
-        DB::shouldReceive('increment')->with('id')->once()->andReturn(1000000000);
+        $pdoProphecy = $this->prophesize(PDO::class);
+        $pdoProphecy->lastInsertId()->willReturn(1000000000);
+        $pdo = $pdoProphecy->reveal();
+
+        DB::shouldReceive('table')->with('academic_id_sequence')->once()->andReturnSelf();
+        DB::shouldReceive('insert')->with(['id' => null])->once()->andReturn(1);
+        DB::shouldReceive('getPdo')->with()->once()->andReturn($pdo);
+
         $db = $this->app->get('db');
         $repository = new AcademicQueryBuilderRepository(
             $db,
@@ -334,7 +343,8 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         Academic $academic,
         array $rawAcademic,
         QueryException $exception
-    ): void {
+    ): void
+    {
         $rawAcademicWithoutArticles = $rawAcademic;
         unset($rawAcademicWithoutArticles['articles']);
         $this->expectException(ImpossibleToSaveAcademic::class);
@@ -378,7 +388,7 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         DB::shouldReceive('commit')->with()->once()->andReturnSelf();
         DB::shouldReceive('table')->with('academics')->once()->andReturnSelf();
         DB::shouldReceive('table')->with('articles')->andReturnSelf();
-        DB::shouldReceive('where')->with('id', '=', (string) $academic->registrationNumber())->once()->andReturnSelf();
+        DB::shouldReceive('where')->with('id', '=', (string)$academic->registrationNumber())->once()->andReturnSelf();
         DB::shouldReceive('update')->with($rawAcademicWithoutArticles)->once();
         foreach ($rawAcademic['articles'] as $rawArticle) {
             DB::shouldReceive('updateOrInsert')->with(['id' => $rawArticle['id']], $rawArticle)->once();
@@ -410,7 +420,8 @@ final class AcademicQueryBuilderRepositoryTest extends TestCase
         Academic $academic,
         array $rawAcademic,
         QueryException $exception
-    ): void {
+    ): void
+    {
         $this->expectException(ImpossibleToSaveAcademic::class);
         DB::shouldReceive('beginTransaction')->with()->once()->andThrow($exception);
         $db = $this->app->get('db');
