@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Rules;
 
-use Acme\Academic\ValueObject\AcademicRegistrationNumber;
-use Acme\Academic\ValueObject\Exception\InvalidAcademicRegistrationNumber;
+use Acme\Academic\ValueObject\Exception\InvalidFirstName;
+use Acme\Academic\ValueObject\FirstName;
 use Illuminate\Contracts\Validation\Rule;
 
-class AcademicIDRule implements Rule
+class AcademicFirstNameRule implements Rule
 {
     /**
      * @var string
@@ -18,10 +18,10 @@ class AcademicIDRule implements Rule
     public function passes($attribute, $value): bool
     {
         try {
-            AcademicRegistrationNumber::fromString($value);
+            new FirstName($value);
 
             return true;
-        } catch (InvalidAcademicRegistrationNumber $e) {
+        } catch (InvalidFirstName $e) {
             $this->message = $e->getMessage();
 
             return false;
