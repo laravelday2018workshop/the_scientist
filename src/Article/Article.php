@@ -20,7 +20,7 @@ final class Article
      */
     private $id;
 
-    public function __construct(int $id, string $title, string $body, \DateTime $creationDate)
+    public function __construct(int $id, string $title, string $body, \DateTimeImmutable $creationDate)
     {
 
         $this->title = $title;
@@ -48,7 +48,7 @@ final class Article
     /**
      * @return \DateTime
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): \DateTimeImmutable
     {
         return $this->creationDate;
     }
@@ -61,5 +61,5 @@ final class Article
         return $this->id;
     }
 
-    
+
 }
