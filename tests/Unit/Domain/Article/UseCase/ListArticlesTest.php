@@ -28,7 +28,7 @@ class ListArticlesTest extends TestCase
             ]
         ];
 
-        $data = handler();
+        $data = $handler();
 
         $this->assertEquals($expectedData, $data);
 
