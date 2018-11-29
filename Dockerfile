@@ -44,4 +44,4 @@ RUN echo 'xdebug.idekey=SCIENCE' >> $XDEBUG_CONFIGURATION_FILE && \
     echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" >> $XDEBUG_CONFIGURATION_FILE
 
 EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0
+CMD php artisan migrate && php artisan serve --host=0.0.0.0
