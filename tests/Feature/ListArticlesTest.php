@@ -19,7 +19,13 @@ class ListArticlesTest extends TestCase
     {
         $response = $this->get('api/articles');
         $response->assertStatus(200);
-        $response->assertJson([]);
+        $response->assertJson([
+            [
+                'title' => 'Articolo 1',
+                'body' => 'Questo è un articolo',
+                'creationDate' => '2018-11-29 00:00:00'
+            ]
+        ]);
 
         //$this->assertTrue(true);
     }
