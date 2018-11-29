@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\Article\UseCase;
 
-use Tests\TestCase;
+
+use LaravelDay\Article\UseCase\ListArticles\ListArticles;use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -26,6 +27,10 @@ class ListArticlesTest extends TestCase
                 'creationDate' => '2018-11-29 00:00:00'
             ]
         ];
+
+        $data = handler();
+
+        $this->assertEquals($expectedData, $data);
 
     }
 }
