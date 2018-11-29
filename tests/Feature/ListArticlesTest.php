@@ -24,7 +24,7 @@ class ListArticlesTest extends TestCase
                 'creationDate' => '2018-11-29 00:00:00',
                 'lastUpdate' => '2018-11-29 00:00:00',
                 'publishDate' => '2018-11-29 00:00:00',
-            ]
+            ],
         ]);
     }
 }

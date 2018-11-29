@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelDay\Article;
 
 final class Article
@@ -16,7 +18,7 @@ final class Article
     /** @var \DateTime */
     private $creationDate;
 
-    public function __construct(int $id, string $title, string $body, \DateTime $creationDate)
+    public function __construct(int $id, string $title, string $body, \DateTimeImmutable $creationDate)
     {
         $this->id = $id;
         $this->title = $title;
@@ -29,12 +31,12 @@ final class Article
         return $this->title;
     }
 
-    public function getBody():string
+    public function getBody(): string
     {
         return $this->body;
     }
 
-    public function getCreationDate():string
+    public function getCreationDate(): string
     {
         return $this->creationDate;
     }

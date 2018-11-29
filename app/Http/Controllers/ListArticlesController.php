@@ -10,11 +10,10 @@ class ListArticlesController extends Controller
 {
     public function __invoke()
     {
-
         $listArticles = new ListArticles();
 
         $articles = $listArticles();
+
         return response()->json($articles);
-            
     }
 }
