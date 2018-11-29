@@ -18,7 +18,7 @@ COPY ./ /app
 # Install dependeies for PHP
 RUN apt-get update && \
     apt-get install -y git zlib1g-dev && \
-    docker-php-ext-install zip
+    docker-php-ext-install zip pdo pdo_mysql
 
 # Install dependecies (dev included) and run framework commands
 COPY --from=composer /usr/bin/composer /usr/bin/composer
